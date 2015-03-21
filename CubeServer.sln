@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeServer", "CubeServer\CubeServer.csproj", "{F606A181-4B4F-4A07-BAE9-713892BF117F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{EDFE2305-E605-4718-B7D9-9BAC0D98552F}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
+		PublishScripts\Publish-WebApplicationWebsite.ps1 = PublishScripts\Publish-WebApplicationWebsite.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configurations", "{979EBEC0-C3A8-4778-8F14-7B14197E9BB9}"
+	ProjectSection(SolutionItems) = preProject
+		PublishScripts\Configurations\CubeServer-WAWS-dev.json = PublishScripts\Configurations\CubeServer-WAWS-dev.json
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F606A181-4B4F-4A07-BAE9-713892BF117F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F606A181-4B4F-4A07-BAE9-713892BF117F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F606A181-4B4F-4A07-BAE9-713892BF117F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F606A181-4B4F-4A07-BAE9-713892BF117F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{979EBEC0-C3A8-4778-8F14-7B14197E9BB9} = {EDFE2305-E605-4718-B7D9-9BAC0D98552F}
+	EndGlobalSection
+EndGlobal
