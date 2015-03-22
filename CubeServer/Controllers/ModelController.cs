@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
+﻿// // //------------------------------------------------------------------------------------------------- 
+// // // <copyright file="ModelController.cs" company="Microsoft Corporation">
+// // // Copyright (c) Microsoft Corporation. All rights reserved.
+// // // </copyright>
+// // //-------------------------------------------------------------------------------------------------
 
 namespace CubeServer.Controllers
 {
+    using System.Web.Http;
+
     public class ModelController : ApiController
     {
-        // GET: sets/{setid}/{version}/model/{detail}/{modelid}
-        public object Get(string setid, string version, string detail, string modelid)
+        [HttpGet]
+        [Route("sets/{setid}/{version}/models/{detailLevel}/{modelid}")]
+        public object Get(string setid, string version, string detailLevel, string modelid)
         {
             return "modelBits";
         }

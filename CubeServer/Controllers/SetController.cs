@@ -11,11 +11,16 @@ namespace CubeServer.Controllers
 
     public class SetController : ApiController
     {
+
+        [HttpGet]
+        [Route("sets")]
         public IEnumerable<object> GetAll()
         {
             return new [] { "Nashville", "LasVegas", "Seattle" };
         }
 
+        [HttpGet]
+        [Route("sets/{setid}")]
         public IEnumerable<object> Get(string setid)
         {
             return new [] {"v1"};

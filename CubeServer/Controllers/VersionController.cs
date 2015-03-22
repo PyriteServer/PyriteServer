@@ -11,7 +11,8 @@ namespace CubeServer.Controllers
 
     public class VersionController : ApiController
     {
-        // GET: sets/{setid}/{versionid}
+        [HttpGet]
+        [Route("sets/{setid}/{versionid}")]
         public IEnumerable<string> Get(string setid, string versionid)
         {
             return new[] { "value1", "value2" };

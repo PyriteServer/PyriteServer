@@ -14,9 +14,10 @@ namespace CubeServer
     {
         protected void Application_Start()
         {
+            GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
             GlobalConfiguration.Configuration.Formatters.Clear();
             GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configuration.EnsureInitialized();
         }
     }
 }

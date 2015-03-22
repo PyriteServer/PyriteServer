@@ -1,22 +1,15 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="Startup.cs" company="Microsoft Corporation">
+// // // <copyright file="ICubeStorage.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-using CubeServer;
-using Microsoft.Owin;
-
-[assembly: OwinStartup(typeof(Startup))]
-
-namespace CubeServer
+namespace CubeServer.Contracts
 {
-    using Owin;
+    using System.Collections.Generic;
 
-    public partial class Startup
+    public interface ICubeStorage
     {
-        public void Configuration(IAppBuilder app)
-        {
-        }
+        IEnumerable<string> EnumerateSets();
     }
 }

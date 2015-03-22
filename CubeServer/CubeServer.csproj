@@ -87,12 +87,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Controllers\CubeController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
+    <Compile Include="FileCubeStorage.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -114,7 +115,6 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
-    <None Include="Project_Readme.html" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
