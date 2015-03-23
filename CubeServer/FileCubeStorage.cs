@@ -9,6 +9,7 @@ namespace CubeServer
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Security;
     using CubeServer.Contracts;
 
     public class FileCubeStorage : ICubeStorage
@@ -23,18 +24,40 @@ namespace CubeServer
             }
 
             string storageFullPath = Path.GetFullPath(storageRoot);
-
             if (!Directory.Exists(storageFullPath))
             {
-                Directory.CreateDirectory(storageRoot);
+                Directory.CreateDirectory(storageFullPath);
             }
 
-            this.storageRootDirectory = storageRoot;
+            this.storageRootDirectory = storageFullPath;
         }
 
         public IEnumerable<string> EnumerateSets()
         {
             string[] childDirectories = Directory.GetDirectories(this.storageRootDirectory);
+            foreach (string directory in childDirectories)
+            {
+                string name = Path.GetFileName(directory);
+                yield return name;
+            }
+        }
+
+        public IEnumerable<string> EnumerateSetVersions(string setid)
+        {
+            string setPath = Path.Combine(this.storageRootDirectory, setid);
+
+            if (Path.GetDirectoryName(setPath) != storageRootDirectory)
+            {
+                throw new SecurityException("Invalid set name");   
+            }
+
+            if (!Directory.Exists(setPath))
+            {
+                throw new NotFoundException(setPath);
+            }
+
+            string[] childDirectories = Directory.GetDirectories(setPath);
+
             foreach (string directory in childDirectories)
             {
                 string name = Path.GetFileName(directory);
