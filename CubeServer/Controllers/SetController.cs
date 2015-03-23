@@ -6,6 +6,7 @@
 
 namespace CubeServer.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Web.Caching;
     using System.Web.Http;
@@ -15,16 +16,23 @@ namespace CubeServer.Controllers
 
         [HttpGet]
         [Route("sets")]
-        public IEnumerable<object> GetAll()
+        public IHttpActionResult GetAll()
         {
-            return Dependency.Storage.EnumerateSets();
+            return this.Ok(Dependency.Storage.EnumerateSets());
         }
 
         [HttpGet]
         [Route("sets/{setid}")]
-        public IEnumerable<object> Get(string setid)
+        public IHttpActionResult Get(string setid)
         {
-            return new [] {"v1"};
+            try
+            {
+                return this.Ok(Dependency.Storage.EnumerateSetVersions(setid));
+            }
+            catch (NotFoundException ex)
+            {
+                return this.NotFound();
+            }
         }
     }
 }

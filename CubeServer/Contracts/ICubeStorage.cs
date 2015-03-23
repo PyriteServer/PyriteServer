@@ -11,5 +11,7 @@ namespace CubeServer.Contracts
     public interface ICubeStorage
     {
         IEnumerable<string> EnumerateSets();
+
+        IEnumerable<string> EnumerateSetVersions(string setId);
     }
 }
