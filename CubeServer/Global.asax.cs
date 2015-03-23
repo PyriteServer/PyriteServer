@@ -6,9 +6,12 @@
 
 namespace CubeServer
 {
+    using System;
+    using System.IO;
     using System.Net.Http.Formatting;
     using System.Web;
     using System.Web.Http;
+    using CubeServer.Contracts;
 
     public class WebApiApplication : HttpApplication
     {
@@ -18,6 +21,12 @@ namespace CubeServer
             GlobalConfiguration.Configuration.Formatters.Clear();
             GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
             GlobalConfiguration.Configuration.EnsureInitialized();
+
+            string storagePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, ".\\Data");
+            storagePath = Path.GetFullPath(storagePath);
+            System.Diagnostics.Trace.WriteLine(String.Format("Storage path: {0}", storagePath));
+
+            Dependency.Storage = new FileCubeStorage(storagePath);
         }
     }
 }

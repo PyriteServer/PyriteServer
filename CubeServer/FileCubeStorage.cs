@@ -13,7 +13,7 @@ namespace CubeServer
 
     public class FileCubeStorage : ICubeStorage
     {
-        private string storageRootDirectory;
+        private readonly string storageRootDirectory;
 
         public FileCubeStorage(string storageRoot)
         {
@@ -22,9 +22,11 @@ namespace CubeServer
                 throw new ArgumentNullException("storageRoot");
             }
 
-            if (!Directory.Exists(storageRoot))
+            string storageFullPath = Path.GetFullPath(storageRoot);
+
+            if (!Directory.Exists(storageFullPath))
             {
-                throw new DirectoryNotFoundException(storageRootDirectory);
+                Directory.CreateDirectory(storageRoot);
             }
 
             this.storageRootDirectory = storageRoot;
@@ -32,7 +34,12 @@ namespace CubeServer
 
         public IEnumerable<string> EnumerateSets()
         {
-
+            string[] childDirectories = Directory.GetDirectories(this.storageRootDirectory);
+            foreach (string directory in childDirectories)
+            {
+                string name = Path.GetFileName(directory);
+                yield return name;
+            }
         }
     }
 }

@@ -93,6 +93,7 @@
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
+    <Compile Include="Dependency.cs" />
     <Compile Include="FileCubeStorage.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -103,6 +104,9 @@
   <ItemGroup>
     <Content Include="default.html" />
     <Content Include="Global.asax" />
+    <Content Include="Data\Nashville\readme.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Properties\PublishProfiles\DxCubeServer.pubxml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -112,7 +116,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SampleData\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

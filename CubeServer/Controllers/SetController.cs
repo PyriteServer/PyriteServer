@@ -7,6 +7,7 @@
 namespace CubeServer.Controllers
 {
     using System.Collections.Generic;
+    using System.Web.Caching;
     using System.Web.Http;
 
     public class SetController : ApiController
@@ -16,7 +17,7 @@ namespace CubeServer.Controllers
         [Route("sets")]
         public IEnumerable<object> GetAll()
         {
-            return new [] { "Nashville", "LasVegas", "Seattle" };
+            return Dependency.Storage.EnumerateSets();
         }
 
         [HttpGet]
