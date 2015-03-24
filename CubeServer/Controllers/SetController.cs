@@ -8,6 +8,7 @@ namespace CubeServer.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Web.Caching;
     using System.Web.Http;
 
@@ -18,7 +19,7 @@ namespace CubeServer.Controllers
         [Route("sets")]
         public IHttpActionResult GetAll()
         {
-            return this.Ok(Dependency.Storage.EnumerateSets());
+            return this.Ok(Dependency.Storage.EnumerateSets().OrderBy(set => set.Name));
         }
 
         [HttpGet]
