@@ -88,6 +88,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\ICubeStorage.cs" />
+    <Compile Include="Contracts\ResultWrapper.cs" />
+    <Compile Include="Contracts\SetResultContract.cs" />
     <Compile Include="Controllers\CubeController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
@@ -111,6 +113,7 @@
     <Content Include="Data\Nashville\v1\readme.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Data\Nashville\v1\index.json" />
     <None Include="Properties\PublishProfiles\DxCubeServer.pubxml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

@@ -32,13 +32,13 @@ namespace CubeServer
             this.storageRootDirectory = storageFullPath;
         }
 
-        public IEnumerable<string> EnumerateSets()
+        public IEnumerable<SetResultContract> EnumerateSets()
         {
             string[] childDirectories = Directory.GetDirectories(this.storageRootDirectory);
             foreach (string directory in childDirectories)
             {
-                string name = Path.GetFileName(directory);
-                yield return name;
+                DirectoryInfo info = new DirectoryInfo(directory);
+                yield return new SetResultContract { Name = info.Name, CreationDate = info.CreationTimeUtc };
             }
         }
 

@@ -1,0 +1,10 @@
+﻿{
+  "MinimumViewport" : 1,
+  "MaximumViewport" : 4,
+  "CubeTemplate" : "http://cubeserver.blob.core.windows.net/nashville/v{v}/{x}_{y}_{z}.obj",
+  "MtlTemplate" : "http://cubeserver.blob.core.windows.net/nashville/v{v}/model.mtl",
+  "JpgTemplate" : "http://cubeserver.blob.core.windows.net/nashville/v{v}/model.jpg",
+  "MetadataTemplate" : "http://cubeserver.blob.core.windows.net/nashville/v{v}/metadata.json",
+  "TextureSubdivide" : 2,
+  "TexturePath" : "http://cubeserver.blob.core.windows.net/nashville/t1/{x}_{y}.jpg"
+}

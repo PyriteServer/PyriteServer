@@ -6,34 +6,33 @@
 
 namespace CubeServer.Controllers
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
-    using System.Web.Caching;
     using System.Web.Http;
+    using CubeServer.Contracts;
 
     public class SetController : ApiController
     {
-
-        [HttpGet]
-        [Route("sets")]
-        public IHttpActionResult GetAll()
-        {
-            return this.Ok(Dependency.Storage.EnumerateSets().OrderBy(set => set.Name));
-        }
-
         [HttpGet]
         [Route("sets/{setid}")]
         public IHttpActionResult Get(string setid)
         {
             try
             {
-                return this.Ok(Dependency.Storage.EnumerateSetVersions(setid));
+                var result = Dependency.Storage.EnumerateSetVersions(setid);
+                return this.Ok(ResultWrapper.OkResult(result));
             }
             catch (NotFoundException ex)
             {
                 return this.NotFound();
             }
+        }
+
+        [HttpGet]
+        [Route("sets")]
+        public IHttpActionResult GetAll()
+        {
+            IOrderedEnumerable<SetResultContract> result = Dependency.Storage.EnumerateSets().OrderBy(set => set.Name);
+            return this.Ok(ResultWrapper.OkResult(result));
         }
     }
 }
