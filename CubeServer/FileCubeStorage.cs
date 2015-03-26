@@ -42,7 +42,7 @@ namespace CubeServer
             }
         }
 
-        public IEnumerable<string> EnumerateSetVersions(string setid)
+        public IEnumerable<VersionResultContract> EnumerateSetVersions(string setid)
         {
             string setPath = Path.Combine(this.storageRootDirectory, setid);
 
@@ -60,8 +60,8 @@ namespace CubeServer
 
             foreach (string directory in childDirectories)
             {
-                string name = Path.GetFileName(directory);
-                yield return name;
+                DirectoryInfo info = new DirectoryInfo(directory);
+                yield return new VersionResultContract{ Set = setid, Name = info.Name, CreationDate = info.CreationTimeUtc };
             }
         }
     }

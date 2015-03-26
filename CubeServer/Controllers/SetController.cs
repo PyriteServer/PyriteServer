@@ -18,7 +18,7 @@ namespace CubeServer.Controllers
         {
             try
             {
-                var result = Dependency.Storage.EnumerateSetVersions(setid);
+                var result = Dependency.Storage.EnumerateSetVersions(setid).OrderBy(version => version.Name);
                 return this.Ok(ResultWrapper.OkResult(result));
             }
             catch (NotFoundException ex)

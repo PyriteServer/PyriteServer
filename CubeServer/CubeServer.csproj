@@ -90,6 +90,7 @@
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
     <Compile Include="Contracts\SetResultContract.cs" />
+    <Compile Include="Contracts\VersionResultContract.cs" />
     <Compile Include="Controllers\CubeController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
@@ -97,12 +98,29 @@
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="FileCubeStorage.cs" />
+    <Compile Include="Bounds.cs" />
+    <Compile Include="IBounds.cs" />
+    <Compile Include="IntersectionRecord.cs" />
+    <Compile Include="Microsoft.Xna\BoundingBox.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Microsoft.Xna\BoundingFrustrum.cs" />
+    <Compile Include="Microsoft.Xna\BoundingSphere.cs" />
+    <Compile Include="Microsoft.Xna\Enums.cs" />
+    <Compile Include="Microsoft.Xna\HelperCode\PlaneHelper.cs" />
+    <Compile Include="Microsoft.Xna\MathHelper.cs" />
+    <Compile Include="Microsoft.Xna\Matrix.cs" />
+    <Compile Include="Microsoft.Xna\Plane.cs" />
+    <Compile Include="Microsoft.Xna\Quaternion.cs" />
+    <Compile Include="Microsoft.Xna\Ray.cs" />
+    <Compile Include="Microsoft.Xna\Vector2.cs" />
+    <Compile Include="Microsoft.Xna\Vector4.cs" />
     <Compile Include="NotFoundException.cs" />
+    <Compile Include="OctTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Microsoft.Xna\Vector3.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="default.html" />

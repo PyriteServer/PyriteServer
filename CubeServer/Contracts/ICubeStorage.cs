@@ -12,6 +12,6 @@ namespace CubeServer.Contracts
     {
         IEnumerable<SetResultContract> EnumerateSets();
 
-        IEnumerable<string> EnumerateSetVersions(string setId);
+        IEnumerable<VersionResultContract> EnumerateSetVersions(string setId);
     }
 }
