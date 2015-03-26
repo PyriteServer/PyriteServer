@@ -14,10 +14,14 @@ namespace CubeServer
 
         BoundingSphere BoundingSphere { get; }
 
-        IntersectionRecord<TObject> Intersects(Ray ray);
+        Intersection<TObject> Intersects(Ray ray);
 
-        IntersectionRecord<TObject> Intersects(TObject obj);
+        Intersection<TObject> Intersects(TObject obj);
 
-        IntersectionRecord<TObject> Intersects(BoundingFrustum frustum);
+        Intersection<TObject> Intersects(BoundingBox intersectionBox);
+
+        Intersection<TObject> Intersects(BoundingFrustum frustum);
+
+        Intersection<TObject> Intersects(BoundingSphere intersectionSphere);
     }
 }

@@ -67,6 +67,11 @@ namespace CubeServer
 			get { return this.parent == null; }
 		}
 
+		public BoundingBox Region
+		{
+			get { return this.region; }
+		}
+
 		private bool IsEmpty //untested
 		{
 			get
@@ -101,10 +106,10 @@ namespace CubeServer
 
 		public void Add(TObject item)
 		{
-			this.Add(new[]{ item });
+			this.Add(new[] { item });
 		}
 
-		public IEnumerable<IntersectionRecord<TObject>> AllIntersections(Ray ray)
+		public IEnumerable<Intersection<TObject>> AllIntersections(Ray ray)
 		{
 			if (!this.treeReady)
 			{
@@ -114,7 +119,7 @@ namespace CubeServer
 			return this.GetIntersection(ray);
 		}
 
-		public IEnumerable<IntersectionRecord<TObject>> AllIntersections(BoundingFrustum frustrum)
+		public IEnumerable<Intersection<TObject>> AllIntersections(BoundingFrustum frustrum)
 		{
 			if (!this.treeReady)
 			{
@@ -124,18 +129,18 @@ namespace CubeServer
 			return this.GetIntersection(frustrum);
 		}
 
-		public IntersectionRecord<TObject> NearestIntersection(Ray ray)
+		public Intersection<TObject> NearestIntersection(Ray ray)
 		{
 			if (!this.treeReady)
 			{
 				this.UpdateTree();
 			}
 
-			IEnumerable<IntersectionRecord<TObject>> intersections = GetIntersection(ray);
+			IEnumerable<Intersection<TObject>> intersections = GetIntersection(ray);
 
-			IntersectionRecord<TObject> nearest = new IntersectionRecord<TObject>();
+			Intersection<TObject> nearest = new Intersection<TObject>();
 
-			foreach (IntersectionRecord<TObject> ir in intersections)
+			foreach (Intersection<TObject> ir in intersections)
 			{
 				if (nearest.HasHit == false)
 				{
@@ -181,7 +186,6 @@ namespace CubeServer
 			Vector3 half = dimensions / 2.0f;
 			Vector3 center = this.region.Min + half;
 
-			//Create subdivided regions for each octant
 			BoundingBox[] octant = new BoundingBox[8];
 			octant[0] = new BoundingBox(this.region.Min, center);
 			octant[1] = new BoundingBox(new Vector3(center.X, this.region.Min.Y, this.region.Min.Z), new Vector3(this.region.Max.X, center.Y, center.Z));
@@ -271,25 +275,19 @@ namespace CubeServer
 			return ret;
 		}
 
-		/// <summary>
-		/// Gives you a list of all intersection records which intersect or are contained within the given frustum area
-		/// </summary>
-		/// <param name="frustum">The containing frustum to check for intersection/containment with</param>
-		/// <returns>A list of intersection records with collisions</returns>
-		private IEnumerable<IntersectionRecord<TObject>> GetIntersection(BoundingFrustum frustum)
+		private IEnumerable<Intersection<TObject>> GetIntersection(BoundingFrustum frustum)
 		{
-			if (this.objects.Count == 0 && this.HasChildren == false) //terminator for any recursion
+			if (this.objects.Count == 0 && this.HasChildren == false)
 			{
 				return null;
 			}
 
-			List<IntersectionRecord<TObject>> ret = new List<IntersectionRecord<TObject>>();
+			List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
 
-			//test each object in the list for intersection
 			foreach (TObject obj in this.objects)
 			{
 				//test for intersection
-				IntersectionRecord<TObject> ir = obj.Intersects(frustum);
+				Intersection<TObject> ir = obj.Intersects(frustum);
 				if (ir != null)
 				{
 					ret.Add(ir);
@@ -303,10 +301,10 @@ namespace CubeServer
 					(frustum.Contains(this.childNodes[a].region) == ContainmentType.Intersects ||
 					 frustum.Contains(this.childNodes[a].region) == ContainmentType.Contains))
 				{
-					IEnumerable<IntersectionRecord<TObject>> hitList = this.childNodes[a].GetIntersection(frustum);
+					IEnumerable<Intersection<TObject>> hitList = this.childNodes[a].GetIntersection(frustum);
 					if (hitList != null)
 					{
-						foreach (IntersectionRecord<TObject> ir in hitList)
+						foreach (Intersection<TObject> ir in hitList)
 						{
 							ret.Add(ir);
 						}
@@ -316,14 +314,14 @@ namespace CubeServer
 			return ret;
 		}
 
-		private IEnumerable<IntersectionRecord<TObject>> GetIntersection(Ray intersectRay)
+		private IEnumerable<Intersection<TObject>> GetIntersection(Ray intersectRay)
 		{
 			if (this.objects.Count == 0 && this.HasChildren == false) //terminator for any recursion
 			{
 				return null;
 			}
 
-			List<IntersectionRecord<TObject>> ret = new List<IntersectionRecord<TObject>>();
+			List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
 
 			//the ray is intersecting this region, so we have to check for intersection with all of our contained objects and child regions.
 
@@ -332,7 +330,7 @@ namespace CubeServer
 			{
 				if (obj.BoundingBox.Intersects(intersectRay) != null)
 				{
-					IntersectionRecord<TObject> ir = obj.Intersects(intersectRay);
+					Intersection<TObject> ir = obj.Intersects(intersectRay);
 					if (ir.HasHit)
 					{
 						ret.Add(ir);
@@ -345,10 +343,10 @@ namespace CubeServer
 			{
 				if (this.childNodes[a] != null && this.childNodes[a].region.Intersects(intersectRay) != null)
 				{
-					IEnumerable<IntersectionRecord<TObject>> hits = this.childNodes[a].GetIntersection(intersectRay);
+					IEnumerable<Intersection<TObject>> hits = this.childNodes[a].GetIntersection(intersectRay);
 					if (hits != null)
 					{
-						foreach (IntersectionRecord<TObject> ir in hits)
+						foreach (Intersection<TObject> ir in hits)
 						{
 							ret.Add(ir);
 						}
@@ -359,9 +357,9 @@ namespace CubeServer
 			return ret;
 		}
 
-		private IEnumerable<IntersectionRecord<TObject>> GetIntersection(IEnumerable<TObject> parentObjs)
+		private IEnumerable<Intersection<TObject>> GetIntersection(IEnumerable<TObject> parentObjs)
 		{
-			List<IntersectionRecord<TObject>> intersections = new List<IntersectionRecord<TObject>>();
+			List<Intersection<TObject>> intersections = new List<Intersection<TObject>>();
 			//assume all parent objects have already been processed for collisions against each other.
 			//check all parent objects against all objects in our local node
 			foreach (TObject pObj in parentObjs)
@@ -370,7 +368,7 @@ namespace CubeServer
 				{
 					//We let the two objects check for collision against each other. They can figure out how to do the coarse and granular checks.
 					//all we're concerned about is whether or not a collision actually happened.
-					IntersectionRecord<TObject> ir = pObj.Intersects(lObj);
+					Intersection<TObject> ir = pObj.Intersects(lObj);
 					if (ir != null)
 					{
 						if (intersections.Contains(ir))
@@ -426,7 +424,7 @@ namespace CubeServer
 							continue;
 						}
 
-						IntersectionRecord<TObject> ir = tmp[tmp.Count - 1].Intersects(lObj2);
+						Intersection<TObject> ir = tmp[tmp.Count - 1].Intersects(lObj2);
 						if (ir != null)
 						{
 							intersections.Add(ir);
@@ -560,22 +558,19 @@ namespace CubeServer
 			{
 				//either the item lies outside of the enclosed bounding box or it is intersecting it. Either way, we need to rebuild
 				//the entire tree by enlarging the containing bounding box
-				//BoundingBox enclosingArea = FindBox();
 				this.BuildTree();
 			}
 		}
 
 		private int NextPowerTwo(int v)
 		{
-			int r; // result goes here
-
 			v |= v >> 1; // first round down to one less than a power of 2 
 			v |= v >> 2;
 			v |= v >> 4;
 			v |= v >> 8;
 			v |= v >> 16;
 
-			r = (int)this.debruijnPosition[(uint)(v * 0x07C4ACDDU) >> 27];
+			int r = (int)this.debruijnPosition[(uint)(v * 0x07C4ACDDU) >> 27];
 
 			return 1 << (r + 1);
 		}
@@ -680,13 +675,8 @@ namespace CubeServer
 			this.region.Max -= offset;
 		}
 
-		/// <summary>
-		/// Processes all pending insertions by inserting them into the tree.
-		/// </summary>
-		/// <remarks>Consider deprecating this?</remarks>
-		private void UpdateTree() //complete & tested
+		public void UpdateTree()
 		{
-			/*I think I can just directly insert items into the tree instead of using a queue.*/
 			if (!this.treeBuilt)
 			{
 				while (this.insertionQueue.Count != 0)

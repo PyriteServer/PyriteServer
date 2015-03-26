@@ -100,7 +100,7 @@
     <Compile Include="FileCubeStorage.cs" />
     <Compile Include="Bounds.cs" />
     <Compile Include="IBounds.cs" />
-    <Compile Include="IntersectionRecord.cs" />
+    <Compile Include="Intersection.cs" />
     <Compile Include="Microsoft.Xna\BoundingBox.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

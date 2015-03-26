@@ -8,11 +8,11 @@ namespace CubeServer
 {
     using Microsoft.Xna.Framework;
 
-    public class IntersectionRecord<TObject>
+    public class Intersection<TObject>
     {
         private readonly bool m_hasHit = false;
 
-        public IntersectionRecord()
+        public Intersection()
         {
             this.Position = Vector3.Zero;
             this.Normal = Vector3.Zero;
@@ -21,7 +21,7 @@ namespace CubeServer
             this.Object = default(TObject);
         }
 
-        public IntersectionRecord(Vector3 hitPos, Vector3 hitNormal, Ray ray, double distance)
+        public Intersection(Vector3 hitPos, Vector3 hitNormal, Ray ray, double distance)
         {
             this.Position = hitPos;
             this.Normal = hitNormal;
@@ -30,7 +30,7 @@ namespace CubeServer
             this.m_hasHit = true;
         }
 
-        public IntersectionRecord(TObject hitObject = default(TObject))
+        public Intersection(TObject hitObject = default(TObject))
         {
             this.m_hasHit = hitObject != null;
             this.Object = hitObject;
@@ -55,7 +55,7 @@ namespace CubeServer
 
         public override bool Equals(object otherRecord)
         {
-            IntersectionRecord<TObject> o = (IntersectionRecord<TObject>)otherRecord;
+            Intersection<TObject> o = (Intersection<TObject>)otherRecord;
             return o.Equals(this);
         }
     }
