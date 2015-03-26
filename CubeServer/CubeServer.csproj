@@ -98,7 +98,7 @@
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="FileCubeStorage.cs" />
-    <Compile Include="Bounds.cs" />
+    <Compile Include="CubeBounds.cs" />
     <Compile Include="IBounds.cs" />
     <Compile Include="Intersection.cs" />
     <Compile Include="Microsoft.Xna\BoundingBox.cs" />
