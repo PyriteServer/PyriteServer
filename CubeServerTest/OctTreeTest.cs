@@ -17,40 +17,7 @@ namespace CubeServerTest
     {
         private readonly BoundingBox oneBoundingBox = new BoundingBox(Vector3.Zero, Vector3.One);
         private readonly BoundingBox zeroBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
-
-        public void DumpOctTree(OctTree<CubeBounds> octTree)
-        {
-            Queue<OctTree<CubeBounds>> enumeration = new Queue<OctTree<CubeBounds>>();
-            enumeration.Enqueue(octTree);
-
-            while (enumeration.Count > 0)
-            {
-                OctTree<CubeBounds> nextOctTree = enumeration.Dequeue();
-
-                Trace.WriteLine(nextOctTree.ToString());
-
-                foreach (CubeBounds obj in nextOctTree.Objects)
-                {
-                    Trace.WriteLine(obj.ToString());
-                }
-
-                if (nextOctTree.HasChildren)
-                {
-                    byte active = nextOctTree.OctantMask;
-                    for (int bit = 0; bit < 8; bit++)
-                    {
-                        if (((active >> bit) & 0x01) == 0x01)
-                        {
-                            OctTree<CubeBounds> childNode = nextOctTree.Octant[bit];
-                            if (childNode != null)
-                            {
-                                enumeration.Enqueue(childNode);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        private readonly OctTreeUtilities octTreeUtilities = new OctTreeUtilities();
 
         [TestMethod]
         public void Initialize()
@@ -59,7 +26,7 @@ namespace CubeServerTest
             Assert.IsFalse(testOctTree.HasChildren);
             Assert.IsTrue(testOctTree.IsRoot);
             Assert.AreEqual(this.zeroBoundingBox, testOctTree.Region);
-            this.DumpOctTree(testOctTree);
+            OctTreeUtilities.Dump(testOctTree);
         }
 
         [TestMethod]
@@ -70,7 +37,7 @@ namespace CubeServerTest
             Assert.IsTrue(testOctTree.IsRoot);
             Assert.IsNotNull(testOctTree.Region);
             Assert.AreEqual(Vector3.One, testOctTree.Region.Max);
-            this.DumpOctTree(testOctTree);
+            OctTreeUtilities.Dump(testOctTree);
         }
 
         [TestMethod]
@@ -98,7 +65,7 @@ namespace CubeServerTest
 
             Assert.AreEqual(0, testOctTree.Objects.Count);
 
-            this.DumpOctTree(testOctTree);
+            OctTreeUtilities.Dump(testOctTree);
         }
     }
 }

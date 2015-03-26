@@ -51,7 +51,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="FileCubeStorageTest.cs" />
+    <Compile Include="MetadataLoaderTest.cs" />
     <Compile Include="OctTreeTest.cs" />
+    <Compile Include="OctTreeUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +67,9 @@
     <None Include="Data\ValidDataSet1\readme.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Data\ValidDataSet1\v1\metadata.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Data\ValidDataSet2\readme.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
