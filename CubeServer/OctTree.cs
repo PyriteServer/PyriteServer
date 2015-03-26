@@ -15,9 +15,6 @@ namespace CubeServer
 	{
 		private const int DEFAULT_MIN_SIZE = 1;
 
-		/// <summary>
-		/// These are all of the possible child octants for this node in the tree.
-		/// </summary>
 		private readonly OctTree<TObject>[] childNodes = new OctTree<TObject>[8];
 
 		private readonly uint[] debruijnPosition =
@@ -57,6 +54,16 @@ namespace CubeServer
 			this.minimumSize = minSize;
 		}
 
+		public OctTree<TObject>[] Child
+		{
+			get { return this.childNodes; }
+		}
+
+		public byte ChildMask
+		{
+			get { return this.activeNodes; }
+		}
+
 		public bool HasChildren
 		{
 			get { return this.activeNodes != 0; }
@@ -65,6 +72,11 @@ namespace CubeServer
 		public bool IsRoot
 		{
 			get { return this.parent == null; }
+		}
+
+		public IList<TObject> Objects
+		{
+			get { return this.objects; }
 		}
 
 		public BoundingBox Region
@@ -93,6 +105,11 @@ namespace CubeServer
 
 				return true;
 			}
+		}
+
+		public override string ToString()
+		{
+			return String.Format("Region:{0} Children:{1}b Objects:{2}", this.Region, Convert.ToString(this.activeNodes, 2).PadLeft(8,'0'), this.objects.Count);
 		}
 
 		public void Add(IEnumerable<TObject> items)
@@ -160,6 +177,27 @@ namespace CubeServer
 		public void Remove(TObject item)
 		{
 			this.objects.Remove(item);
+		}
+
+		public void UpdateTree()
+		{
+			if (!this.treeBuilt)
+			{
+				while (this.insertionQueue.Count != 0)
+				{
+					this.objects.Add(this.insertionQueue.Dequeue());
+				}
+				this.BuildTree();
+			}
+			else
+			{
+				while (this.insertionQueue.Count != 0)
+				{
+					this.Insert(this.insertionQueue.Dequeue());
+				}
+			}
+
+			this.treeReady = true;
 		}
 
 		private void BuildTree()
@@ -673,27 +711,6 @@ namespace CubeServer
 
 			this.region.Min -= offset;
 			this.region.Max -= offset;
-		}
-
-		public void UpdateTree()
-		{
-			if (!this.treeBuilt)
-			{
-				while (this.insertionQueue.Count != 0)
-				{
-					this.objects.Add(this.insertionQueue.Dequeue());
-				}
-				this.BuildTree();
-			}
-			else
-			{
-				while (this.insertionQueue.Count != 0)
-				{
-					this.Insert(this.insertionQueue.Dequeue());
-				}
-			}
-
-			this.treeReady = true;
 		}
 	}
 }
