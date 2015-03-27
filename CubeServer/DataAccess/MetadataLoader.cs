@@ -6,7 +6,6 @@
 
 namespace CubeServer.DataAccess
 {
-    using System.Collections.Generic;
     using System.IO;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
@@ -15,14 +14,17 @@ namespace CubeServer.DataAccess
     {
         public OctTree<CubeBounds> Load(Stream metadata)
         {
+            return Load(metadata, new OctTree<CubeBounds>());
+        }
+
+        public OctTree<CubeBounds> Load(Stream metadata, OctTree<CubeBounds> octTree)
+        {
             Metadata data;
             using (StreamReader tr = new StreamReader(metadata))
             using (JsonTextReader jr = new JsonTextReader(tr))
             {
                 data = new JsonSerializer().Deserialize<Metadata>(jr);
             }
-
-            OctTree<CubeBounds> octTree = new OctTree<CubeBounds>();
 
             for (int x = 0; x < data.CubeExists.Length; x++)
             {

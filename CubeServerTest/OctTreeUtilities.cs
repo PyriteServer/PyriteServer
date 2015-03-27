@@ -1,5 +1,6 @@
 ﻿namespace CubeServerTest
 {
+    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using CubeServer;
@@ -8,18 +9,21 @@
     {
         public static void Dump(OctTree<CubeBounds> octTree)
         {
-            Queue<OctTree<CubeBounds>> enumeration = new Queue<OctTree<CubeBounds>>();
-            enumeration.Enqueue(octTree);
+            Queue<Tuple<OctTree<CubeBounds>, int>> enumeration = new Queue<Tuple<OctTree<CubeBounds>, int>>();
+            enumeration.Enqueue(new Tuple<OctTree<CubeBounds>, int>(octTree,0));
 
             while (enumeration.Count > 0)
             {
-                OctTree<CubeBounds> nextOctTree = enumeration.Dequeue();
+                Tuple<OctTree<CubeBounds>, int> next = enumeration.Dequeue();
+                OctTree<CubeBounds> nextOctTree = next.Item1;
+                int indent = next.Item2;
 
+                Trace.IndentLevel = indent;
                 Trace.WriteLine(nextOctTree.ToString());
 
                 foreach (CubeBounds obj in nextOctTree.Objects)
                 {
-                    Trace.WriteLine(obj.ToString());
+                    Trace.WriteLine(" " + obj.ToString());
                 }
 
                 if (nextOctTree.HasChildren)
@@ -32,7 +36,7 @@
                             OctTree<CubeBounds> childNode = nextOctTree.Octant[bit];
                             if (childNode != null)
                             {
-                                enumeration.Enqueue(childNode);
+                                enumeration.Enqueue(new Tuple<OctTree<CubeBounds>, int>(childNode, indent + 1));
                             }
                         }
                     }

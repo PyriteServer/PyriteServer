@@ -7,7 +7,6 @@
 namespace CubeServerTest
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using CubeServer;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Xna.Framework;
@@ -17,7 +16,6 @@ namespace CubeServerTest
     {
         private readonly BoundingBox oneBoundingBox = new BoundingBox(Vector3.Zero, Vector3.One);
         private readonly BoundingBox zeroBoundingBox = new BoundingBox(Vector3.Zero, Vector3.Zero);
-        private readonly OctTreeUtilities octTreeUtilities = new OctTreeUtilities();
 
         [TestMethod]
         public void Initialize()

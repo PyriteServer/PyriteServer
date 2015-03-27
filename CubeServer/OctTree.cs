@@ -49,6 +49,11 @@ namespace CubeServer
 			this.minimumSize = minSize;
 		}
 
+		public int MinimumSize
+		{
+			get { return this.minimumSize; }
+		}
+
 		public byte OctantMask
 		{
 			get { return this.activeOctants; }
@@ -292,7 +297,7 @@ namespace CubeServer
 				return null;
 			}
 
-			OctTree<TObject> ret = new OctTree<TObject>(boundingBox, objList);
+			OctTree<TObject> ret = new OctTree<TObject>(boundingBox, objList, MinimumSize);
 			ret.parent = this;
 
 			return ret;
@@ -300,7 +305,7 @@ namespace CubeServer
 
 		private OctTree<TObject> CreateNode(BoundingBox boundingBox, TObject item)
 		{
-			OctTree<TObject> ret = new OctTree<TObject>(boundingBox, new[] { item });
+			OctTree<TObject> ret = new OctTree<TObject>(boundingBox, new[] { item }, MinimumSize);
 			ret.parent = this;
 			return ret;
 		}
