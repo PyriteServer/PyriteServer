@@ -19,36 +19,51 @@ namespace CubeServerTest
         [TestMethod]
         public void LoadDefaultMinSize()
         {
-            OctTree<CubeBounds> octTree;
-            MetadataLoader loader = new MetadataLoader();
+            OcTree<CubeBounds> ocTree;
             using (Stream metadataStream = new FileStream(".\\data\\validdataset1\\v1\\metadata.json", FileMode.Open, FileAccess.Read))
             {
-                octTree = loader.Load(metadataStream);
+                ocTree = MetadataLoader.Load(metadataStream);
             }
 
-            octTree.UpdateTree();
-            Assert.IsNotNull(octTree);
-            Assert.IsTrue(octTree.HasChildren);
+            ocTree.UpdateTree();
+            Assert.IsNotNull(ocTree);
+            Assert.IsTrue(ocTree.HasChildren);
 
-            OctTreeUtilities.Dump(octTree);
+            OcTreeUtilities.Dump(ocTree);
         }
 
         [TestMethod]
         public void LoadDefaultSize2()
         {
-            OctTree<CubeBounds> octTree = new OctTree<CubeBounds>(new BoundingBox(Vector3.Zero, Vector3.Zero), new CubeBounds[]{}, 2);
-            MetadataLoader loader = new MetadataLoader();
+            OcTree<CubeBounds> ocTree = new OcTree<CubeBounds>(new BoundingBox(Vector3.Zero, Vector3.Zero), new CubeBounds[]{}, 2);
             using (Stream metadataStream = new FileStream(".\\data\\validdataset1\\v1\\metadata.json", FileMode.Open, FileAccess.Read))
             {
-                octTree = loader.Load(metadataStream, octTree);
+                ocTree = MetadataLoader.Load(metadataStream, ocTree);
             }
 
-            octTree.UpdateTree();
-            Assert.AreEqual(2, octTree.MinimumSize);
-            Assert.IsNotNull(octTree);
-            Assert.IsTrue(octTree.HasChildren);
+            ocTree.UpdateTree();
+            Assert.AreEqual(2, ocTree.MinimumSize);
+            Assert.IsNotNull(ocTree);
+            Assert.IsTrue(ocTree.HasChildren);
 
-            OctTreeUtilities.Dump(octTree);   
+            OcTreeUtilities.Dump(ocTree);   
+        }
+
+        [TestMethod]
+        public void LoadLargeSet()
+        {
+            OcTree<CubeBounds> ocTree = new OcTree<CubeBounds>(new BoundingBox(Vector3.Zero, Vector3.Zero), new CubeBounds[] { }, 2);
+            using (Stream metadataStream = new FileStream(".\\data\\validdataset2\\v1\\metadata.json", FileMode.Open, FileAccess.Read))
+            {
+                ocTree = MetadataLoader.Load(metadataStream, ocTree);
+            }
+
+            ocTree.UpdateTree();
+            Assert.AreEqual(2, ocTree.MinimumSize);
+            Assert.IsNotNull(ocTree);
+            Assert.IsTrue(ocTree.HasChildren);
+
+            OcTreeUtilities.Dump(ocTree);
         }
     }
 }

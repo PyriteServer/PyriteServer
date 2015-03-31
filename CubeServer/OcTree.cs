@@ -11,7 +11,7 @@ namespace CubeServer
 	using System.Linq;
 	using Microsoft.Xna.Framework;
 
-	public class OctTree<TObject> where TObject : IBounds<TObject>
+	public class OcTree<TObject> where TObject : IBounds<TObject>
 	{
 		private const int DEFAULT_MIN_SIZE = 1;
 
@@ -21,28 +21,28 @@ namespace CubeServer
 
 		private readonly int minimumSize = DEFAULT_MIN_SIZE;
 		private readonly List<TObject> objects;
-		private readonly OctTree<TObject>[] octants = new OctTree<TObject>[8];
+		private readonly OcTree<TObject>[] octants = new OcTree<TObject>[8];
 
 		private byte activeOctants = 0;
 
-		private OctTree<TObject> parent;
+		private OcTree<TObject> parent;
 		private BoundingBox region;
 		private bool treeBuilt = false;
 		private bool treeReady = false;
 
-		public OctTree() : this(new BoundingBox(Vector3.Zero, Vector3.Zero))
+		public OcTree() : this(new BoundingBox(Vector3.Zero, Vector3.Zero))
 		{
 		}
 
-		public OctTree(BoundingBox region) : this(region, new TObject[] { })
+		public OcTree(BoundingBox region) : this(region, new TObject[] { })
 		{
 		}
 
-		public OctTree(BoundingBox region, IEnumerable<TObject> objList) : this(region, objList, DEFAULT_MIN_SIZE)
+		public OcTree(BoundingBox region, IEnumerable<TObject> objList) : this(region, objList, DEFAULT_MIN_SIZE)
 		{
 		}
 
-		public OctTree(BoundingBox region, IEnumerable<TObject> objList, int minSize)
+		public OcTree(BoundingBox region, IEnumerable<TObject> objList, int minSize)
 		{
 			this.region = region;
 			this.objects = new List<TObject>(objList);
@@ -95,7 +95,7 @@ namespace CubeServer
 			get { return this.objects; }
 		}
 
-		public OctTree<TObject>[] Octant
+		public OcTree<TObject>[] Octant
 		{
 			get { return this.octants; }
 		}
@@ -290,22 +290,22 @@ namespace CubeServer
 			this.treeReady = true;
 		}
 
-		private OctTree<TObject> CreateNode(BoundingBox boundingBox, IEnumerable<TObject> objList) //complete & tested
+		private OcTree<TObject> CreateNode(BoundingBox boundingBox, IEnumerable<TObject> objList) //complete & tested
 		{
 			if (!objList.Any())
 			{
 				return null;
 			}
 
-			OctTree<TObject> ret = new OctTree<TObject>(boundingBox, objList, MinimumSize);
+			OcTree<TObject> ret = new OcTree<TObject>(boundingBox, objList, MinimumSize);
 			ret.parent = this;
 
 			return ret;
 		}
 
-		private OctTree<TObject> CreateNode(BoundingBox boundingBox, TObject item)
+		private OcTree<TObject> CreateNode(BoundingBox boundingBox, TObject item)
 		{
-			OctTree<TObject> ret = new OctTree<TObject>(boundingBox, new[] { item }, MinimumSize);
+			OcTree<TObject> ret = new OcTree<TObject>(boundingBox, new[] { item }, MinimumSize);
 			ret.parent = this;
 			return ret;
 		}

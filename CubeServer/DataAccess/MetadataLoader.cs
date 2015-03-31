@@ -6,19 +6,30 @@
 
 namespace CubeServer.DataAccess
 {
+    using System;
     using System.IO;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
 
     public class MetadataLoader
     {
-        public OctTree<CubeBounds> Load(Stream metadata)
+        public static OcTree<CubeBounds> Load(Stream metadata)
         {
-            return Load(metadata, new OctTree<CubeBounds>());
+            return Load(metadata, new OcTree<CubeBounds>());
         }
 
-        public OctTree<CubeBounds> Load(Stream metadata, OctTree<CubeBounds> octTree)
+        public static OcTree<CubeBounds> Load(Stream metadata, OcTree<CubeBounds> ocTree)
         {
+            if (metadata == null)
+            {
+                throw new ArgumentNullException("metadata");
+            }
+
+            if (ocTree == null)
+            {
+                throw new ArgumentNullException("ocTree");
+            }
+
             Metadata data;
             using (StreamReader tr = new StreamReader(metadata))
             using (JsonTextReader jr = new JsonTextReader(tr))
@@ -41,13 +52,13 @@ namespace CubeServer.DataAccess
                         {
                             var cubeBoundingBox = new BoundingBox { Min = new Vector3(x, y, z), Max = new Vector3(x+1,y+1,z+1) };
 
-                            octTree.Add(new CubeBounds{BoundingBox = cubeBoundingBox});
+                            ocTree.Add(new CubeBounds{BoundingBox = cubeBoundingBox});
                         }
                     }
                 }
             }
 
-            return octTree;
+            return ocTree;
         }
     }
 }
