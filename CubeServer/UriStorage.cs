@@ -33,6 +33,11 @@ namespace CubeServer
             throw new NotImplementedException();
         }
 
+        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string textureid)
+        {
+            throw new NotImplementedException();
+        }
+
         public IEnumerable<SetResultContract> EnumerateSets()
         {
             throw new NotImplementedException();
