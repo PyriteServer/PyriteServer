@@ -9,7 +9,10 @@ namespace CubeServer
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Net.Http.Headers;
     using System.Security;
+    using System.Threading.Tasks;
+    using System.Web;
     using CubeServer.Contracts;
 
     public class FileCubeStorage : ICubeStorage
@@ -48,7 +51,7 @@ namespace CubeServer
 
             if (Path.GetDirectoryName(setPath) != storageRootDirectory)
             {
-                throw new SecurityException("Invalid set name");   
+                throw new SecurityException("Invalid set name");
             }
 
             if (!Directory.Exists(setPath))
@@ -61,8 +64,21 @@ namespace CubeServer
             foreach (string directory in childDirectories)
             {
                 DirectoryInfo info = new DirectoryInfo(directory);
-                yield return new VersionResultContract{ Set = setid, Name = info.Name, CreationDate = info.CreationTimeUtc };
+                yield return new VersionResultContract { Set = setid, Name = info.Name, CreationDate = info.CreationTimeUtc };
             }
+        }
+
+        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string textureid)
+        {
+            string texturePath = Path.Combine(this.storageRootDirectory, setId, detail, textureid + ".jpg");
+            if (!File.Exists(texturePath))
+            {
+                throw new NotFoundException(texturePath);
+            }
+
+            FileInfo info = new FileInfo(texturePath);
+            FileStream fs = File.Open(texturePath, FileMode.Open, FileAccess.Read);
+            return Task.FromResult(new StorageStream(fs, info.Length, new MediaTypeHeaderValue(MimeMapping.GetMimeMapping(Path.GetExtension(texturePath)))));
         }
     }
 }

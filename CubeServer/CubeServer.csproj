@@ -90,6 +90,7 @@
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
     <Compile Include="Contracts\SetResultContract.cs" />
+    <Compile Include="Contracts\StorageStream.cs" />
     <Compile Include="Contracts\VersionResultContract.cs" />
     <Compile Include="Controllers\CubeController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Dependency.cs" />
     <Compile Include="FileCubeStorage.cs" />
     <Compile Include="CubeBounds.cs" />
+    <Compile Include="HttpCubeStorage.cs" />
     <Compile Include="IBounds.cs" />
     <Compile Include="Intersection.cs" />
     <Compile Include="LoaderResults.cs" />
@@ -124,12 +126,14 @@
     <Compile Include="NotFoundException.cs" />
     <Compile Include="OcTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Results\StreamResult.cs" />
     <Compile Include="Set.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Microsoft.Xna\Vector3.cs" />
     <Compile Include="UriStorage.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Data\Nashville\t1\0_1.jpg" />
     <Content Include="default.html" />
     <Content Include="Global.asax" />
     <Content Include="Data\Nashville\readme.md">

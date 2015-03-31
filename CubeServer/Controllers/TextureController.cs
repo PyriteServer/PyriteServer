@@ -6,15 +6,26 @@
 
 namespace CubeServer.Controllers
 {
+    using System.Threading.Tasks;
     using System.Web.Http;
+    using CubeServer.Contracts;
+    using CubeServer.Results;
 
     public class TextureController : ApiController
     {
         [HttpGet]
         [Route("sets/{setid}/{version}/textures/{detail}/{textureid}")]
-        public object Get(string setid, string version, string detail, string textureid)
+        public async Task<IHttpActionResult> Get(string setid, string version, string detail, string textureid)
         {
-            return "textureBits";
+            try
+            {
+                StorageStream textureStream = await new HttpCubeStorage().GetTextureStream(setid, version, detail, textureid);
+                return new StreamResult(textureStream, this.Request);
+            }
+            catch (NotFoundException)
+            {
+                return this.NotFound();
+            }
         }
     }
 }
