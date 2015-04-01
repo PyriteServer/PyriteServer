@@ -6,12 +6,13 @@
 
 namespace CubeServer.DataAccess
 {
+    using System.Collections.Generic;
     using CubeServer.Model;
 
     public class LoaderResults
     {
         public LoaderException[] Errors { get; set; }
-        public Set[] Sets { get; set; }
+        public IDictionary<string, Set> Sets { get; set; }
         public bool Success { get; set; }
     }
 }

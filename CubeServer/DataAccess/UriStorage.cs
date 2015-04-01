@@ -48,7 +48,7 @@ namespace CubeServer.DataAccess
             get { return this.loadedSetData.Get(); }
         }
 
-        private readonly ActiveState<LoaderResults> loadedSetData = new ActiveState<LoaderResults>();
+        private readonly RevolvingState<LoaderResults> loadedSetData = new RevolvingState<LoaderResults>();
 
         public async Task<T> Deserialize<T>(Uri url)
         {
@@ -72,7 +72,20 @@ namespace CubeServer.DataAccess
 
         public IEnumerable<VersionResultContract> EnumerateSetVersions(string setId)
         {
-            throw new NotImplementedException();
+            var setData = this.loadedSetData.Get();
+            if (setData == null)
+            {
+                return new VersionResultContract[] { };
+            }
+
+            Set set;
+
+            if (!setData.Sets.TryGetValue(setId, out set))
+            {
+                return new VersionResultContract[] { };
+            }
+
+            return set.Versions.Select(v => new VersionResultContract{CreationDate = DateTime.Now, Name = "v" + v.Number.ToString(CultureInfo.InvariantCulture), Set = setId});
         }
 
         public IEnumerable<SetResultContract> EnumerateSets()
@@ -83,7 +96,7 @@ namespace CubeServer.DataAccess
                 return new SetResultContract[] { };
             }
 
-            return setData.Sets.Select(s => new SetResultContract { CreationDate = DateTime.Now, Name = s.Name });
+            return setData.Sets.Values.Select(s => new SetResultContract { CreationDate = DateTime.Now, Name = s.Name });
         }
 
         public async Task<T> Get<T>(Uri url, Func<Stream, T> perform)
@@ -106,7 +119,7 @@ namespace CubeServer.DataAccess
             LoaderResults results = new LoaderResults();
 
             List<LoaderException> exceptions = new List<LoaderException>();
-            List<Set> sets = new List<Set>();
+            Dictionary<string, Set> sets = new Dictionary<string, Set>();
 
             SetContract[] setsMetadata = null;
             Uri storageRootUri = null;
@@ -123,7 +136,7 @@ namespace CubeServer.DataAccess
             {
                 exceptions.Add(new LoaderException("Sets", this.storageRoot, ex));
                 results.Errors = exceptions.ToArray();
-                results.Sets = new Set[] { };
+                results.Sets = sets;
                 return results;
             }
 
@@ -157,7 +170,7 @@ namespace CubeServer.DataAccess
                         versions.Add(currentSetVersion);
                     }
                     currentSet.Versions = versions.OrderBy(v => v.Number).ToArray();
-                    sets.Add(currentSet);
+                    sets.Add(currentSet.Name, currentSet);
                 }
                 catch (Exception ex)
                 {
@@ -165,8 +178,8 @@ namespace CubeServer.DataAccess
                 }
             }
 
-            results.Sets = sets.OrderBy(set => set.Name).ToArray();
             results.Errors = exceptions.ToArray();
+            results.Sets = sets;
 
             return results;
         }
@@ -225,7 +238,7 @@ namespace CubeServer.DataAccess
             }
         }
 
-        private class ActiveState<T>
+        private class RevolvingState<T>
         {
             private readonly ReaderWriterLockSlim stateLock = new ReaderWriterLockSlim();
             private readonly T[] states = new T[2];
