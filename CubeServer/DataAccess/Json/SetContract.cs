@@ -1,20 +1,19 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="SetResultContract.cs" company="Microsoft Corporation">
+// // // <copyright file="SetContract.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace CubeServer.DataAccess.Json
 {
-    using System;
     using Newtonsoft.Json;
 
-    public class SetResultContract
+    public class SetContract
     {
-        [JsonProperty("creationDate")]
-        public DateTime CreationDate { get; set; }
-
         [JsonProperty("name")]
         public string Name { get; set; }
+
+        [JsonProperty("url")]
+        public string Url { get; set; }
     }
 }

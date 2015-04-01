@@ -4,14 +4,14 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace CubeServer.DataAccess.Json
 {
-    public class Metadata
+    public class CubeMetadataContract
     {
         public bool[][][] CubeExists { get; set; }
 
-        public Extents Extents { get; set; }
+        public ExtentsContract Extents { get; set; }
 
-        public GridSize GridSize { get; set; }
+        public GridSizeContract GridSize { get; set; }
     }
 }

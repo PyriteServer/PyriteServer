@@ -4,9 +4,9 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace CubeServer.DataAccess.Json
 {
-    public class Extents
+    public class ExtentsContract
     {
         public float XMax { get; set; }
         public float XMin { get; set; }

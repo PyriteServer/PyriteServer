@@ -8,6 +8,7 @@ namespace CubeServer.DataAccess
 {
     using System;
     using System.IO;
+    using CubeServer.DataAccess.Json;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
 
@@ -30,11 +31,11 @@ namespace CubeServer.DataAccess
                 throw new ArgumentNullException("ocTree");
             }
 
-            Metadata data;
+            CubeMetadataContract data;
             using (StreamReader tr = new StreamReader(metadata))
             using (JsonTextReader jr = new JsonTextReader(tr))
             {
-                data = new JsonSerializer().Deserialize<Metadata>(jr);
+                data = new JsonSerializer().Deserialize<CubeMetadataContract>(jr);
             }
 
             for (int x = 0; x < data.CubeExists.Length; x++)

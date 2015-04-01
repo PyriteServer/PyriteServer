@@ -9,6 +9,7 @@ namespace CubeServer.Contracts
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using CubeServer.DataAccess;
+    using CubeServer.DataAccess.Json;
 
     public interface ICubeStorage
     {

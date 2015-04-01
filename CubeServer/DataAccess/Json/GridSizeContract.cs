@@ -1,19 +1,17 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="SetContract.cs" company="Microsoft Corporation">
+// // // <copyright file="GridSize.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace CubeServer.DataAccess.Json
 {
-    using Newtonsoft.Json;
-
-    public class SetContract
+    public class GridSizeContract
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        public float X { get; set; }
 
-        [JsonProperty("url")]
-        public string Url { get; set; }
+        public float Y { get; set; }
+
+        public float Z { get; set; }
     }
 }

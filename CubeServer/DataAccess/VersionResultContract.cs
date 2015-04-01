@@ -11,13 +11,7 @@ namespace CubeServer.DataAccess
 
     public class VersionResultContract
     {
-        [JsonProperty("creationDate")]
-        public DateTime CreationDate { get; set; }
-
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("set")]
-        public string Set { get; set; }
     }
 }

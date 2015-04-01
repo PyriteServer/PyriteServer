@@ -14,6 +14,7 @@ namespace CubeServer.DataAccess
     using System.Threading.Tasks;
     using System.Web;
     using CubeServer.Contracts;
+    using CubeServer.DataAccess.Json;
 
     public class FileCubeStorage : ICubeStorage
     {

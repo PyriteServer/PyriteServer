@@ -17,6 +17,7 @@ namespace CubeServer.DataAccess
     using System.Threading;
     using System.Threading.Tasks;
     using CubeServer.Contracts;
+    using CubeServer.DataAccess.Json;
     using CubeServer.Model;
     using Newtonsoft.Json;
 
@@ -85,7 +86,7 @@ namespace CubeServer.DataAccess
                 return new VersionResultContract[] { };
             }
 
-            return set.Versions.Select(v => new VersionResultContract{CreationDate = DateTime.Now, Name = "v" + v.Number.ToString(CultureInfo.InvariantCulture), Set = setId});
+            return set.Versions.Select(v => new VersionResultContract{Name = "v" + v.Number.ToString(CultureInfo.InvariantCulture)});
         }
 
         public IEnumerable<SetResultContract> EnumerateSets()
@@ -96,7 +97,7 @@ namespace CubeServer.DataAccess
                 return new SetResultContract[] { };
             }
 
-            return setData.Sets.Values.Select(s => new SetResultContract { CreationDate = DateTime.Now, Name = s.Name });
+            return setData.Sets.Values.Select(s => new SetResultContract { Name = s.Name });
         }
 
         public async Task<T> Get<T>(Uri url, Func<Stream, T> perform)
