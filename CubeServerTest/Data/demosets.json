@@ -1,0 +1,4 @@
+﻿[
+    { url:"http://cubeserver.blob.core.windows.net/nashville/index.json", name:"Nashville" },
+    { url:"http://cubeserver.blob.core.windows.net/perth/index.json", name:"Perth" }
+]

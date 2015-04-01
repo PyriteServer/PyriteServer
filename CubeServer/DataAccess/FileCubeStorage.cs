@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace CubeServer.DataAccess
 {
     using System;
     using System.Collections.Generic;
@@ -49,7 +49,7 @@ namespace CubeServer
         {
             string setPath = Path.Combine(this.storageRootDirectory, setid);
 
-            if (Path.GetDirectoryName(setPath) != storageRootDirectory)
+            if (Path.GetDirectoryName(setPath) != this.storageRootDirectory)
             {
                 throw new SecurityException("Invalid set name");
             }

@@ -89,25 +89,30 @@
   <ItemGroup>
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
-    <Compile Include="Contracts\SetResultContract.cs" />
     <Compile Include="Contracts\StorageStream.cs" />
-    <Compile Include="Contracts\VersionResultContract.cs" />
     <Compile Include="Controllers\CubeController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="DataAccess\Extents.cs" />
+    <Compile Include="DataAccess\FileCubeStorage.cs" />
     <Compile Include="DataAccess\GridSize.cs" />
+    <Compile Include="DataAccess\LoaderException.cs" />
+    <Compile Include="DataAccess\LoaderResults.cs" />
     <Compile Include="DataAccess\Metadata.cs" />
     <Compile Include="DataAccess\MetadataLoader.cs" />
+    <Compile Include="DataAccess\SetContract.cs" />
+    <Compile Include="DataAccess\SetMetadataContract.cs" />
+    <Compile Include="DataAccess\SetResultContract.cs" />
+    <Compile Include="DataAccess\SetVersionContract.cs" />
+    <Compile Include="DataAccess\UriStorage.cs" />
+    <Compile Include="DataAccess\VersionResultContract.cs" />
     <Compile Include="Dependency.cs" />
-    <Compile Include="FileCubeStorage.cs" />
     <Compile Include="CubeBounds.cs" />
     <Compile Include="HttpCubeStorage.cs" />
     <Compile Include="IBounds.cs" />
     <Compile Include="Intersection.cs" />
-    <Compile Include="LoaderResults.cs" />
     <Compile Include="Microsoft.Xna\BoundingBox.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -123,14 +128,14 @@
     <Compile Include="Microsoft.Xna\Ray.cs" />
     <Compile Include="Microsoft.Xna\Vector2.cs" />
     <Compile Include="Microsoft.Xna\Vector4.cs" />
+    <Compile Include="Model\Set.cs" />
+    <Compile Include="Model\SetVersion.cs" />
     <Compile Include="NotFoundException.cs" />
     <Compile Include="OcTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Results\StreamResult.cs" />
-    <Compile Include="Set.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Microsoft.Xna\Vector3.cs" />
-    <Compile Include="UriStorage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Data\Nashville\t1\0_1.jpg" />

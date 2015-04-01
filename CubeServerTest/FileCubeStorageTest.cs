@@ -10,6 +10,7 @@ namespace CubeServerTest
     using System.IO;
     using CubeServer;
     using CubeServer.Contracts;
+    using CubeServer.DataAccess;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]

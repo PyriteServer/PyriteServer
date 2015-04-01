@@ -9,7 +9,7 @@ namespace CubeServerTest
     using System;
     using System.IO;
     using System.Threading.Tasks;
-    using CubeServer;
+    using CubeServer.DataAccess;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
@@ -24,10 +24,12 @@ namespace CubeServerTest
             Uri setsJsonUri = new Uri(setsJson);
 
             UriStorage storage = new UriStorage(setsJsonUri.ToString());
-            LoaderResults results = await storage.Load();
 
-            Assert.AreEqual(0, results.Errors.Length);
-            Assert.AreEqual(2, results.Sets.Length);
+            storage.WaitLoad.WaitOne();
+
+            Assert.IsNotNull(storage.LastKnownGood);
+            Assert.AreEqual(0, storage.LastKnownGood.Errors.Length);
+            Assert.AreEqual(1, storage.LastKnownGood.Sets.Length);
         }
     }
 }

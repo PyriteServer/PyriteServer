@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Contracts
+namespace CubeServer.DataAccess
 {
     using System;
     using Newtonsoft.Json;

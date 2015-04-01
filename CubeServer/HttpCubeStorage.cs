@@ -12,6 +12,7 @@ namespace CubeServer
     using System.Net.Http;
     using System.Threading.Tasks;
     using CubeServer.Contracts;
+    using CubeServer.DataAccess;
 
     public class HttpCubeStorage : ICubeStorage
     {

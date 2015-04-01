@@ -1,15 +1,19 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="LoaderResults.cs" company="Microsoft Corporation">
+// // // <copyright file="SetContract.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace CubeServer.DataAccess
 {
-    public class LoaderResults
+    using Newtonsoft.Json;
+
+    public class SetContract
     {
-        public LoaderException[] Errors { get; set; }
-        public Set[] Sets { get; set; }
-        public bool Success { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("url")]
+        public string Url { get; set; }
     }
 }

@@ -1,4 +1,3 @@
 ﻿[
-    { url:"./ValidDataSet1/index.json", name:"ValidDataSet1" },
-    { url:"./ValidDataSet2/index.json", name:"ValidDataSet2" }
+    { url:"./ValidDataSet1/index.json", name:"ValidDataSet1" }
 ]

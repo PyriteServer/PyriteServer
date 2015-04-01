@@ -8,6 +8,7 @@ namespace CubeServer.Contracts
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
+    using CubeServer.DataAccess;
 
     public interface ICubeStorage
     {

@@ -12,9 +12,21 @@ namespace CubeServer
     using System.Net.Http.Formatting;
     using System.Web;
     using System.Web.Http;
+    using CubeServer.DataAccess;
 
     public class WebApiApplication : HttpApplication
     {
+        private static readonly UriStorage storage = new UriStorage("http://cubeserver.blob.core.windows.net/sets/demosets.json");
+
+        public override void Dispose()
+        {
+            if (storage != null)
+            {
+                storage.Dispose();
+            }
+            base.Dispose();
+        }
+
         protected void Application_Start()
         {
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
@@ -26,7 +38,7 @@ namespace CubeServer
             storagePath = Path.GetFullPath(storagePath);
             Trace.WriteLine(String.Format("Storage path: {0}", storagePath));
 
-            Dependency.Storage = new FileCubeStorage(storagePath);
+            Dependency.Storage = storage;
         }
     }
 }
