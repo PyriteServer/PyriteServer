@@ -95,6 +95,7 @@
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
+    <Compile Include="DataAccess\AzureUriStorage.cs" />
     <Compile Include="DataAccess\Json\ExtentsContract.cs" />
     <Compile Include="DataAccess\FileCubeStorage.cs" />
     <Compile Include="DataAccess\Json\GridSizeContract.cs" />

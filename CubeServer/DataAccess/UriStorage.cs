@@ -23,13 +23,18 @@ namespace CubeServer.DataAccess
 
     public class UriStorage : ICubeStorage, IDisposable
     {
-        private readonly string storageRoot;
+        protected string storageRoot;
 
         private bool disposed = false;
         private RevolvingState<LoaderResults> loadedSetData = new RevolvingState<LoaderResults>();
         private Thread loaderThread;
         private ManualResetEvent onExit = new ManualResetEvent(false);
         private AutoResetEvent onLoad = new AutoResetEvent(false);
+
+        public UriStorage()
+        {
+            
+        }
 
         public UriStorage(string rootUri)
         {
@@ -126,6 +131,8 @@ namespace CubeServer.DataAccess
             try
             {
                 storageRootUri = new Uri(this.storageRoot);
+                this.TransformUri(storageRootUri);
+
                 setsMetadata = await this.Deserialize<SetContract[]>(storageRootUri);
                 if (setsMetadata == null)
                 {
@@ -182,6 +189,10 @@ namespace CubeServer.DataAccess
             results.Sets = sets;
 
             return results;
+        }
+
+        protected virtual void TransformUri(Uri sourceUri)
+        {
         }
 
         protected virtual void Dispose(bool disposing)
