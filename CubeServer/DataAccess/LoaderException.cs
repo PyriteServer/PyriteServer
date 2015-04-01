@@ -2,6 +2,7 @@ namespace CubeServer.DataAccess
 {
     using System;
 
+    [Serializable]
     public class LoaderException : Exception
     {
         public LoaderException(string stage, string uri, Exception innerException) : base(innerException.Message, innerException)

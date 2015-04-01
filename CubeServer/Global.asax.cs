@@ -17,14 +17,28 @@ namespace CubeServer
     public class WebApiApplication : HttpApplication
     {
         private static readonly UriStorage storage = new UriStorage("http://cubeserver.blob.core.windows.net/sets/demosets.json");
+        private bool disposed = false;
 
-        public override void Dispose()
+        public void Dispose()
         {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (!disposing || this.disposed)
+            {
+                return;
+            }
+
             if (storage != null)
             {
                 storage.Dispose();
             }
             base.Dispose();
+
+            this.disposed = true;
         }
 
         protected void Application_Start()

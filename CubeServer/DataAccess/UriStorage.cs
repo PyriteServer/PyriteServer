@@ -23,12 +23,13 @@ namespace CubeServer.DataAccess
 
     public class UriStorage : ICubeStorage, IDisposable
     {
-        private readonly AutoResetEvent onLoad = new AutoResetEvent(false);
         private readonly string storageRoot;
-        private bool disposed = false;
-        private Thread loaderThread;
 
+        private bool disposed = false;
+        private RevolvingState<LoaderResults> loadedSetData = new RevolvingState<LoaderResults>();
+        private Thread loaderThread;
         private ManualResetEvent onExit = new ManualResetEvent(false);
+        private AutoResetEvent onLoad = new AutoResetEvent(false);
 
         public UriStorage(string rootUri)
         {
@@ -37,19 +38,17 @@ namespace CubeServer.DataAccess
             this.loaderThread.Start();
         }
 
+        public LoaderResults LastKnownGood
+        {
+            get { return this.loadedSetData.Get(); }
+        }
+
         public LoaderResults LastLoaderResults { get; set; }
 
         public WaitHandle WaitLoad
         {
             get { return this.onLoad; }
         }
-
-        public LoaderResults LastKnownGood
-        {
-            get { return this.loadedSetData.Get(); }
-        }
-
-        private readonly RevolvingState<LoaderResults> loadedSetData = new RevolvingState<LoaderResults>();
 
         public async Task<T> Deserialize<T>(Uri url)
         {
@@ -73,7 +72,7 @@ namespace CubeServer.DataAccess
 
         public IEnumerable<VersionResultContract> EnumerateSetVersions(string setId)
         {
-            var setData = this.loadedSetData.Get();
+            LoaderResults setData = this.loadedSetData.Get();
             if (setData == null)
             {
                 return new VersionResultContract[] { };
@@ -86,12 +85,12 @@ namespace CubeServer.DataAccess
                 return new VersionResultContract[] { };
             }
 
-            return set.Versions.Select(v => new VersionResultContract{Name = "v" + v.Number.ToString(CultureInfo.InvariantCulture)});
+            return set.Versions.Select(v => new VersionResultContract { Name = "v" + v.Number.ToString(CultureInfo.InvariantCulture) });
         }
 
         public IEnumerable<SetResultContract> EnumerateSets()
         {
-            var setData = this.loadedSetData.Get();
+            LoaderResults setData = this.loadedSetData.Get();
             if (setData == null)
             {
                 return new SetResultContract[] { };
@@ -206,6 +205,18 @@ namespace CubeServer.DataAccess
                 this.onExit = null;
             }
 
+            if (this.onLoad != null)
+            {
+                this.onLoad.Dispose();
+                this.onLoad = null;
+            }
+
+            if (this.loadedSetData != null)
+            {
+                this.loadedSetData.Dispose();
+                this.loadedSetData = null;
+            }
+
             this.disposed = true;
         }
 
@@ -239,12 +250,19 @@ namespace CubeServer.DataAccess
             }
         }
 
-        private class RevolvingState<T>
+        private class RevolvingState<T> : IDisposable
         {
             private readonly ReaderWriterLockSlim stateLock = new ReaderWriterLockSlim();
             private readonly T[] states = new T[2];
 
             private volatile int active = -1;
+            private bool disposed = false;
+
+            public void Dispose()
+            {
+                this.Dispose(true);
+                GC.SuppressFinalize(this);
+            }
 
             public T Get()
             {
@@ -283,6 +301,21 @@ namespace CubeServer.DataAccess
                         break;
                     }
                 }
+            }
+
+            protected virtual void Dispose(bool disposing)
+            {
+                if (!disposing || this.disposed)
+                {
+                    return;
+                }
+
+                if (this.stateLock != null)
+                {
+                    this.stateLock.Dispose();
+                }
+
+                this.disposed = true;
             }
 
             private void Set(int index, T value)
