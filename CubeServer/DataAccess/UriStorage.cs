@@ -119,7 +119,7 @@ namespace CubeServer.DataAccess
             LoaderResults results = new LoaderResults();
 
             List<LoaderException> exceptions = new List<LoaderException>();
-            Dictionary<string, Set> sets = new Dictionary<string, Set>();
+            Dictionary<string, Set> sets = new Dictionary<string, Set>(StringComparer.InvariantCultureIgnoreCase);
 
             SetContract[] setsMetadata = null;
             Uri storageRootUri = null;
