@@ -42,7 +42,7 @@ namespace CubeServer.DataAccess
             foreach (string directory in childDirectories)
             {
                 DirectoryInfo info = new DirectoryInfo(directory);
-                yield return new SetResultContract { Name = info.Name, CreationDate = info.CreationTimeUtc };
+                yield return new SetResultContract { Name = info.Name};
             }
         }
 
@@ -65,7 +65,7 @@ namespace CubeServer.DataAccess
             foreach (string directory in childDirectories)
             {
                 DirectoryInfo info = new DirectoryInfo(directory);
-                yield return new VersionResultContract { Set = setid, Name = info.Name, CreationDate = info.CreationTimeUtc };
+                yield return new VersionResultContract { Name = info.Name};
             }
         }
 

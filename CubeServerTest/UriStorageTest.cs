@@ -29,7 +29,7 @@ namespace CubeServerTest
 
             Assert.IsNotNull(storage.LastKnownGood);
             Assert.AreEqual(0, storage.LastKnownGood.Errors.Length);
-            Assert.AreEqual(1, storage.LastKnownGood.Sets.Length);
+            Assert.AreEqual(1, storage.LastKnownGood.Sets.Count);
         }
     }
 }
