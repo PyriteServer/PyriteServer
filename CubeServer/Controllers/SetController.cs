@@ -6,6 +6,7 @@
 
 namespace CubeServer.Controllers
 {
+    using System.Diagnostics;
     using System.Linq;
     using System.Web.Http;
     using CubeServer.Contracts;
@@ -20,11 +21,12 @@ namespace CubeServer.Controllers
         {
             try
             {
-                var result = Dependency.Storage.EnumerateSetVersions(setid).OrderBy(version => version.Name);
+                IOrderedEnumerable<VersionResultContract> result = Dependency.Storage.EnumerateSetVersions(setid).OrderBy(version => version.Name);
                 return this.Ok(ResultWrapper.OkResult(result));
             }
             catch (NotFoundException ex)
             {
+                Trace.WriteLine(ex, "SetController::Get");
                 return this.NotFound();
             }
         }

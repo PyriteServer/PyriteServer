@@ -106,6 +106,10 @@ namespace CubeServer.DataAccess
 
         public async Task<T> Get<T>(Uri url, Func<Stream, T> perform)
         {
+            url = this.TransformUri(url);
+
+            Trace.WriteLine(url.ToString(), "UriStorage::Get");
+
             WebRequest request = WebRequest.Create(url);
             using (WebResponse response = await request.GetResponseAsync())
             using (Stream stream = response.GetResponseStream())
@@ -131,7 +135,6 @@ namespace CubeServer.DataAccess
             try
             {
                 storageRootUri = new Uri(this.storageRoot);
-                this.TransformUri(storageRootUri);
 
                 setsMetadata = await this.Deserialize<SetContract[]>(storageRootUri);
                 if (setsMetadata == null)
@@ -191,8 +194,9 @@ namespace CubeServer.DataAccess
             return results;
         }
 
-        protected virtual void TransformUri(Uri sourceUri)
+        protected virtual Uri TransformUri(Uri sourceUri)
         {
+            return sourceUri;
         }
 
         protected virtual void Dispose(bool disposing)

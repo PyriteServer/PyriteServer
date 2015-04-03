@@ -1,1 +1,1 @@
-﻿<InsertRealAzureKeyHere>
+﻿DefaultEndpointsProtocol=https;AccountName=cubeserver;

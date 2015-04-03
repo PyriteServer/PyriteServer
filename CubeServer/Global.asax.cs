@@ -7,22 +7,48 @@
 namespace CubeServer
 {
     using System;
+    using System.Configuration;
     using System.Diagnostics;
     using System.IO;
     using System.Net.Http.Formatting;
     using System.Web;
     using System.Web.Http;
+    using CubeServer.Contracts;
     using CubeServer.DataAccess;
 
     public class WebApiApplication : HttpApplication
     {
-        private static readonly UriStorage storage = new UriStorage("http://cubeserver.blob.core.windows.net/sets/demosets.json");
         private bool disposed = false;
+        private AzureUriStorage storage = null;
 
-        public void Dispose()
+        public override void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected void Application_Start()
+        {
+            string dataPath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, ".\\Data");
+            dataPath = Path.GetFullPath(dataPath);
+            Trace.WriteLine(String.Format("Data path: {0}", dataPath));
+
+            string connSecretsPath = Path.Combine(dataPath, "accountkey.txt");
+            ISecretsProvider connProvider = new FileSecretsProvider(connSecretsPath);
+
+            string setRootUrl = ConfigurationManager.AppSettings["SetRootUrl"];
+            if (string.IsNullOrWhiteSpace(setRootUrl))
+            {
+                throw new ConfigurationErrorsException("SetRootUrl not specified");
+            }
+
+            this.storage = new AzureUriStorage(connProvider.Value, setRootUrl);
+            Dependency.Storage = this.storage;
+
+            GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
+            GlobalConfiguration.Configuration.Formatters.Clear();
+            GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
+            GlobalConfiguration.Configuration.EnsureInitialized();
         }
 
         private void Dispose(bool disposing)
@@ -32,27 +58,14 @@ namespace CubeServer
                 return;
             }
 
-            if (storage != null)
+            if (this.storage != null)
             {
-                storage.Dispose();
+                this.storage.Dispose();
             }
-            base.Dispose();
 
             this.disposed = true;
-        }
 
-        protected void Application_Start()
-        {
-            GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
-            GlobalConfiguration.Configuration.Formatters.Clear();
-            GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
-            GlobalConfiguration.Configuration.EnsureInitialized();
-
-            string storagePath = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, ".\\Data");
-            storagePath = Path.GetFullPath(storagePath);
-            Trace.WriteLine(String.Format("Storage path: {0}", storagePath));
-
-            Dependency.Storage = storage;
+            base.Dispose();
         }
     }
 }

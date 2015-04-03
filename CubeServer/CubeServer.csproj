@@ -40,9 +40,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration">
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Storage">
+      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -88,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Contracts\ICubeStorage.cs" />
+    <Compile Include="Contracts\ISecretsProvider.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
     <Compile Include="Contracts\StorageStream.cs" />
     <Compile Include="Controllers\CubeController.cs" />
@@ -96,6 +119,7 @@
     <Compile Include="Controllers\TextureController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="DataAccess\AzureUriStorage.cs" />
+    <Compile Include="DataAccess\FileSecretsProvider.cs" />
     <Compile Include="DataAccess\Json\ExtentsContract.cs" />
     <Compile Include="DataAccess\FileCubeStorage.cs" />
     <Compile Include="DataAccess\Json\GridSizeContract.cs" />
@@ -139,21 +163,9 @@
     <Compile Include="Microsoft.Xna\Vector3.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\Nashville\t1\0_1.jpg" />
+    <Content Include="Data\accountkey.txt" />
     <Content Include="default.html" />
     <Content Include="Global.asax" />
-    <Content Include="Data\Nashville\readme.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Nashville\v1\readme.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Nashville\index.json" />
-    <Content Include="Data\Nashville\v4\metadata.json" />
-    <Content Include="Data\Nashville\v4\readme.md">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Nashville\v1\metadata.json" />
     <None Include="Properties\PublishProfiles\DxCubeServer.pubxml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
