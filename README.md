@@ -1,4 +1,4 @@
-# DxCubeServer
+# PyriteServer
 
 master | Project
 --- | ---
