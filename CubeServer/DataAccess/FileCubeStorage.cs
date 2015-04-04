@@ -42,7 +42,7 @@ namespace CubeServer.DataAccess
             foreach (string directory in childDirectories)
             {
                 DirectoryInfo info = new DirectoryInfo(directory);
-                yield return new SetResultContract { Name = info.Name};
+                yield return new SetResultContract { Name = info.Name };
             }
         }
 
@@ -65,13 +65,13 @@ namespace CubeServer.DataAccess
             foreach (string directory in childDirectories)
             {
                 DirectoryInfo info = new DirectoryInfo(directory);
-                yield return new VersionResultContract { Name = info.Name};
+                yield return new VersionResultContract { Name = info.Name };
             }
         }
 
-        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string textureid)
+        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos)
         {
-            string texturePath = Path.Combine(this.storageRootDirectory, setId, detail, textureid + ".jpg");
+            string texturePath = Path.Combine(this.storageRootDirectory, setId, detail, string.Format("{0}_{1}.jpg", xpos, ypos));
             if (!File.Exists(texturePath))
             {
                 throw new NotFoundException(texturePath);
@@ -80,6 +80,11 @@ namespace CubeServer.DataAccess
             FileInfo info = new FileInfo(texturePath);
             FileStream fs = File.Open(texturePath, FileMode.Open, FileAccess.Read);
             return Task.FromResult(new StorageStream(fs, info.Length, new MediaTypeHeaderValue(MimeMapping.GetMimeMapping(Path.GetExtension(texturePath)))));
+        }
+
+        public Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos)
+        {
+            throw new NotImplementedException();
         }
     }
 }

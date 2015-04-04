@@ -10,5 +10,6 @@ namespace CubeServer.Model
     {
         public OcTree<CubeBounds> Cubes { get; set; }
         public int Number { get; set; }
+        public string CubePathFormat { get; set; }
     }
 }

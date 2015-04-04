@@ -14,5 +14,7 @@ namespace CubeServer.Model
         public string Name { get; set; }
         public Uri SourceUri { get; set; }
         public SetVersion[] Versions { get; set; }
+        public int TextureDivisions { get; set; }
+        public string TexturePathFormat { get; set; }
     }
 }

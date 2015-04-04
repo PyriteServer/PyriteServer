@@ -135,7 +135,6 @@
     <Compile Include="DataAccess\VersionResultContract.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="CubeBounds.cs" />
-    <Compile Include="HttpCubeStorage.cs" />
     <Compile Include="IBounds.cs" />
     <Compile Include="Intersection.cs" />
     <Compile Include="Microsoft.Xna\BoundingBox.cs" />

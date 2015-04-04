@@ -13,6 +13,7 @@ namespace CubeServer.DataAccess
     using System.IO;
     using System.Linq;
     using System.Net;
+    using System.Net.Http.Headers;
     using System.Runtime.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
@@ -23,17 +24,18 @@ namespace CubeServer.DataAccess
 
     public class UriStorage : ICubeStorage, IDisposable
     {
-        protected string storageRoot;
-
+        private const string X_PLACEHOLDER = "{x}";
+        private const string Y_PLACEHOLDER = "{y}";
+        private const string Z_PLACEHOLDER = "{z}";
         private bool disposed = false;
         private RevolvingState<LoaderResults> loadedSetData = new RevolvingState<LoaderResults>();
         private Thread loaderThread;
         private ManualResetEvent onExit = new ManualResetEvent(false);
         private AutoResetEvent onLoad = new AutoResetEvent(false);
+        protected string storageRoot;
 
         public UriStorage()
         {
-            
         }
 
         public UriStorage(string rootUri)
@@ -53,26 +55,6 @@ namespace CubeServer.DataAccess
         public WaitHandle WaitLoad
         {
             get { return this.onLoad; }
-        }
-
-        public async Task<T> Deserialize<T>(Uri url)
-        {
-            Func<Stream, T> deserialize = sourceStream =>
-                                          {
-                                              using (StreamReader sr = new StreamReader(sourceStream))
-                                              using (JsonTextReader jr = new JsonTextReader(sr))
-                                              {
-                                                  return new JsonSerializer().Deserialize<T>(jr);
-                                              }
-                                          };
-
-            return await this.Get(url, deserialize);
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public IEnumerable<VersionResultContract> EnumerateSetVersions(string setId)
@@ -104,6 +86,55 @@ namespace CubeServer.DataAccess
             return setData.Sets.Values.Select(s => new SetResultContract { Name = s.Name });
         }
 
+        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos)
+        {
+            if (this.LastKnownGood == null || this.LastKnownGood.Sets == null || this.LastKnownGood.Sets[setId] == null ||
+                this.LastKnownGood.Sets[setId].TexturePathFormat == null)
+            {
+                throw new NotFoundException("Texture");
+            }
+            string texturePath = this.LastKnownGood.Sets[setId].TexturePathFormat.Replace(X_PLACEHOLDER, xpos).Replace(Y_PLACEHOLDER, ypos);
+            return GetStorageStreamForPath(texturePath);
+        }
+
+        public Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos)
+        {
+            if (this.LastKnownGood == null || this.LastKnownGood.Sets == null || this.LastKnownGood.Sets[setId] == null ||
+                this.LastKnownGood.Sets[setId].Versions == null)
+            {
+                throw new NotFoundException("Model");
+            }
+
+            SetVersion setVersion = this.LastKnownGood.Sets[setId].Versions.First((sv) => sv.Number == detail);
+            if (setVersion == null)
+            {
+                throw new NotFoundException("Model");
+            }
+            string modelPath = setVersion.CubePathFormat.Replace(X_PLACEHOLDER, xpos).Replace(Y_PLACEHOLDER, ypos).Replace(Z_PLACEHOLDER, zpos);
+
+            return GetStorageStreamForPath(modelPath);
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public async Task<T> Deserialize<T>(Uri url)
+        {
+            Func<Stream, T> deserialize = sourceStream =>
+                                          {
+                                              using (StreamReader sr = new StreamReader(sourceStream))
+                                              using (JsonTextReader jr = new JsonTextReader(sr))
+                                              {
+                                                  return new JsonSerializer().Deserialize<T>(jr);
+                                              }
+                                          };
+
+            return await this.Get(url, deserialize);
+        }
+
         public async Task<T> Get<T>(Uri url, Func<Stream, T> perform)
         {
             url = this.TransformUri(url);
@@ -118,9 +149,15 @@ namespace CubeServer.DataAccess
             }
         }
 
-        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string textureid)
+        private async Task<StorageStream> GetStorageStreamForPath(string path)
         {
-            throw new NotImplementedException();
+            Uri targetUri = new Uri(path);
+            targetUri = this.TransformUri(targetUri);
+            WebRequest request = WebRequest.Create(targetUri);
+            WebResponse response = await request.GetResponseAsync();
+
+            // Storage stream is used in a StreamResult which closes the stream for us when done
+            return new StorageStream(response.GetResponseStream(), response.ContentLength, new MediaTypeHeaderValue(response.ContentType));
         }
 
         public async Task<LoaderResults> LoadMetadata()
@@ -164,7 +201,13 @@ namespace CubeServer.DataAccess
 
                     Trace.WriteLine(String.Format("Discovered set {0} at {1}", set.Name, set.Url));
 
-                    Set currentSet = new Set { SourceUri = setMetadataUri, Name = set.Name };
+                    Set currentSet = new Set
+                                     {
+                                         SourceUri = setMetadataUri,
+                                         Name = set.Name,
+                                         TextureDivisions = setMetadata.TextureSubdivide,
+                                         TexturePathFormat = setMetadata.TexturePath
+                                     };
 
                     List<SetVersion> versions = new List<SetVersion>();
                     foreach (int version in Enumerable.Range(setMetadata.MinimumViewport, setMetadata.MaximumViewport))
@@ -175,7 +218,15 @@ namespace CubeServer.DataAccess
                         OcTree<CubeBounds> octree = await this.Get(versionMetadataUri, MetadataLoader.Load);
                         octree.UpdateTree();
 
-                        SetVersion currentSetVersion = new SetVersion { Cubes = octree, Number = version };
+                        SetVersion currentSetVersion = new SetVersion
+                                                       {
+                                                           Cubes = octree,
+                                                           Number = version,
+                                                           CubePathFormat =
+                                                               setMetadata.CubeTemplate.Replace(
+                                                                   "{v}",
+                                                                   version.ToString(CultureInfo.InvariantCulture)).Replace(".obj", ".ebo")
+                                                       };
 
                         versions.Add(currentSetVersion);
                     }
@@ -269,7 +320,6 @@ namespace CubeServer.DataAccess
         {
             private readonly ReaderWriterLockSlim stateLock = new ReaderWriterLockSlim();
             private readonly T[] states = new T[2];
-
             private volatile int active = -1;
             private bool disposed = false;
 
