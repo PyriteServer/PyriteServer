@@ -1,0 +1,21 @@
+// // //------------------------------------------------------------------------------------------------- 
+// // // <copyright file="SetVersionLevelOfDetail.cs" company="Microsoft Corporation">
+// // // Copyright (c) Microsoft Corporation. All rights reserved.
+// // // </copyright>
+// // //-------------------------------------------------------------------------------------------------
+
+namespace CubeServer.Model
+{
+    using Microsoft.Xna.Framework;
+
+    public class SetVersionLevelOfDetail
+    {
+        public Vector2 TextureSetSize { get; set; }
+        public Vector3 SetSize { get; set; }
+        public BoundingBox WorldBounds { get; set; }
+        public string CubePathFormat { get; set; }
+        public OcTree<CubeBounds> Cubes { get; set; }
+        public string Name { get; set; }
+        public int Number { get; set; }
+    }
+}

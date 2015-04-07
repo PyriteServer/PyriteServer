@@ -109,10 +109,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\BoundingBoxContract.cs" />
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ISecretsProvider.cs" />
+    <Compile Include="Contracts\LevelOfDetailContract.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
+    <Compile Include="Contracts\SetVersionResultContract.cs" />
     <Compile Include="Contracts\StorageStream.cs" />
+    <Compile Include="Contracts\Vector2Contract.cs" />
+    <Compile Include="Contracts\Vector3Contract.cs" />
+    <Compile Include="Contracts\VersionResultContract.cs" />
     <Compile Include="Controllers\CubeController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
@@ -132,7 +138,6 @@
     <Compile Include="DataAccess\Json\SetResultContract.cs" />
     <Compile Include="DataAccess\Json\SetVersionContract.cs" />
     <Compile Include="DataAccess\UriStorage.cs" />
-    <Compile Include="DataAccess\VersionResultContract.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="CubeBounds.cs" />
     <Compile Include="IBounds.cs" />
@@ -154,6 +159,7 @@
     <Compile Include="Microsoft.Xna\Vector4.cs" />
     <Compile Include="Model\Set.cs" />
     <Compile Include="Model\SetVersion.cs" />
+    <Compile Include="Model\SetVersionLevelOfDetail.cs" />
     <Compile Include="NotFoundException.cs" />
     <Compile Include="OcTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -165,7 +171,6 @@
     <Content Include="Data\accountkey.txt" />
     <Content Include="default.html" />
     <Content Include="Global.asax" />
-    <None Include="Properties\PublishProfiles\DxCubeServer.pubxml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -173,6 +178,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\pyrite - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\pyrite - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\pyrite.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SampleData\" />

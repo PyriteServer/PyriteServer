@@ -1,17 +1,22 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="VersionResultContract.cs" company="Microsoft Corporation">
+// // // <copyright file="LevelOfDetailContract.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace CubeServer.Contracts
 {
-    using System;
     using Newtonsoft.Json;
 
-    public class VersionResultContract
+    public class LevelOfDetailContract
     {
         [JsonProperty("name")]
         public string Name { get; set; }
+
+        [JsonProperty("setSize")]
+        public Vector3Contract SetSize { get; set; }
+
+        [JsonProperty("worldBounds")]
+        public BoundingBoxContract WorldBounds { get; set; }
     }
 }

@@ -17,6 +17,8 @@ namespace CubeServer.Contracts
 
         IEnumerable<VersionResultContract> EnumerateSetVersions(string setId);
 
+        SetVersionResultContract GetSetVersion(string setId, string version);
+
         Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos);
 
         Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos);

@@ -1,1 +1,1 @@
-﻿DefaultEndpointsProtocol=https;AccountName=cubeserver;
+﻿DefaultEndpointsProtocol=https;AccountName=cubeserver;AccountKey=WmPXm8pUdV9sXmg/Vz73cMnq9/ZiHBD106a5SMvSShpQ1BYrdyZEr/4zPJq8q2dIAgCigvWU598fuWcqxE4NzQ==

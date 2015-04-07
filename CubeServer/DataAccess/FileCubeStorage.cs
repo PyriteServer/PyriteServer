@@ -86,5 +86,11 @@ namespace CubeServer.DataAccess
         {
             throw new NotImplementedException();
         }
+
+
+        public SetVersionResultContract GetSetVersion(string setId, string version)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

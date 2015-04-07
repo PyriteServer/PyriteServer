@@ -8,8 +8,7 @@ namespace CubeServer.Model
 {
     public class SetVersion
     {
-        public OcTree<CubeBounds> Cubes { get; set; }
-        public int Number { get; set; }
-        public string CubePathFormat { get; set; }
+        public string Name { get; set; }
+        public SetVersionLevelOfDetail[] DetailLevels { get; set; }
     }
 }

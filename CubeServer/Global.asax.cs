@@ -45,6 +45,9 @@ namespace CubeServer
             this.storage = new AzureUriStorage(connProvider.Value, setRootUrl);
             Dependency.Storage = this.storage;
 
+            // wait reasonable amount of time for first load
+            this.storage.WaitLoadCompleted.WaitOne(30000);
+
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
             GlobalConfiguration.Configuration.Formatters.Clear();
             GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
