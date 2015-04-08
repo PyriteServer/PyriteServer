@@ -144,6 +144,17 @@ namespace CubeServer
 			return this.GetIntersection(frustrum);
 		}
 
+		public IEnumerable<Intersection<TObject>> AllIntersections(BoundingBox box)
+		{
+			if (!this.treeReady)
+			{
+				this.UpdateTree();
+			}
+
+			return this.GetIntersection(box);
+		}
+
+
 		public Intersection<TObject> NearestIntersection(Ray ray)
 		{
 			if (!this.treeReady)
@@ -307,6 +318,50 @@ namespace CubeServer
 		{
 			OcTree<TObject> ret = new OcTree<TObject>(boundingBox, new[] { item }, MinimumSize);
 			ret.parent = this;
+			return ret;
+		}
+
+		private IEnumerable<Intersection<TObject>> GetIntersection(BoundingBox box)
+		{
+			if (this.objects.Count == 0 && this.HasChildren == false)
+			{
+				return null;
+			}
+
+			List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
+
+			foreach (TObject obj in this.objects)
+			{
+				// test for intersection
+				Intersection<TObject> ir = obj.Intersects(box);
+				if (ir != null)
+				{
+					ret.Add(ir);
+				}
+			}
+
+			// test each object in the list for intersection
+			for (int a = 0; a < 8; a++)
+			{
+				if (this.octants[a] == null)
+				{
+					continue;
+				}
+
+				var octantRegion = this.octants[a].region;
+
+				if((box.Contains(octantRegion) == ContainmentType.Intersects || box.Contains(octantRegion) == ContainmentType.Contains))
+				{
+					IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(box);
+					if (hitList != null)
+					{
+						foreach (Intersection<TObject> ir in hitList)
+						{
+							ret.Add(ir);
+						}
+					}
+				}
+			}
 			return ret;
 		}
 

@@ -10,6 +10,7 @@ namespace CubeServer.Contracts
     using System.Threading.Tasks;
     using CubeServer.DataAccess;
     using CubeServer.DataAccess.Json;
+    using Microsoft.Xna.Framework;
 
     public interface ICubeStorage
     {
@@ -22,5 +23,7 @@ namespace CubeServer.Contracts
         Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos);
 
         Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos);
+
+        IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox);
     }
 }

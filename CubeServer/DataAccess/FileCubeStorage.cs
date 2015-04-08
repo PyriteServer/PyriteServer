@@ -15,6 +15,7 @@ namespace CubeServer.DataAccess
     using System.Web;
     using CubeServer.Contracts;
     using CubeServer.DataAccess.Json;
+    using Microsoft.Xna.Framework;
 
     public class FileCubeStorage : ICubeStorage
     {
@@ -87,6 +88,10 @@ namespace CubeServer.DataAccess
             throw new NotImplementedException();
         }
 
+        public IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox)
+        {
+            throw new NotImplementedException();
+        }
 
         public SetVersionResultContract GetSetVersion(string setId, string version)
         {

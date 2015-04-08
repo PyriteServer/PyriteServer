@@ -113,13 +113,14 @@
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ISecretsProvider.cs" />
     <Compile Include="Contracts\LevelOfDetailContract.cs" />
+    <Compile Include="Contracts\QueryResultContract.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
     <Compile Include="Contracts\SetVersionResultContract.cs" />
     <Compile Include="Contracts\StorageStream.cs" />
     <Compile Include="Contracts\Vector2Contract.cs" />
     <Compile Include="Contracts\Vector3Contract.cs" />
     <Compile Include="Contracts\VersionResultContract.cs" />
-    <Compile Include="Controllers\CubeController.cs" />
+    <Compile Include="Controllers\QueryController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
@@ -183,7 +184,6 @@
     <None Include="Properties\PublishProfiles\pyrite.pubxml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="NewFolder1\" />
     <Folder Include="SampleData\" />
   </ItemGroup>
   <ItemGroup>

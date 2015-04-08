@@ -26,7 +26,6 @@ namespace CubeServer.DataAccess
     public class UriStorage : ICubeStorage, IDisposable
     {
         protected string storageRoot;
-        private const string VERSION_PLACEHOLDER = "{v}";
         private const string X_PLACEHOLDER = "{x}";
         private const string Y_PLACEHOLDER = "{y}";
         private const string Z_PLACEHOLDER = "{z}";
@@ -76,6 +75,32 @@ namespace CubeServer.DataAccess
             GC.SuppressFinalize(this);
         }
 
+        public IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox)
+        {
+            LoaderResults setData = this.loadedSetData.Get();
+            if (setData == null)
+            {
+                throw new NotFoundException("setData");
+            }
+
+            SetVersion setVersion = setData.FindSetVersion(setId, versionId);
+
+            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name == detail);
+            if (lod == null)
+            {
+                throw new NotFoundException("detailLevel");
+            }
+
+            var cubeBox = lod.ToCubeCoordinates(worldBox);
+            var intersections = lod.Cubes.AllIntersections(cubeBox);
+
+            foreach (var intersection in intersections)
+            {
+                var min = intersection.Object.BoundingBox.Min;
+                yield return new []{(int)min.X, (int)min.Y, (int)min.Z};
+            }
+        }
+
         public IEnumerable<VersionResultContract> EnumerateSetVersions(string setId)
         {
             LoaderResults setData = this.loadedSetData.Get();
@@ -118,9 +143,15 @@ namespace CubeServer.DataAccess
             }
         }
 
-        public Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos)
+        public Task<StorageStream> GetModelStream(string setId, string versionId, string detail, string xpos, string ypos, string zpos)
         {
-            SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, version);
+            LoaderResults setData = this.loadedSetData.Get();
+            if (setData == null)
+            {
+                throw new NotFoundException("setData");
+            }
+
+            SetVersion setVersion = setData.FindSetVersion(setId, versionId);
 
             SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name == detail);
             if (lod == null)
@@ -129,11 +160,17 @@ namespace CubeServer.DataAccess
             }
 
             string modelPath = lod.ModelTemplate.ToString();
-            modelPath = modelPath.Replace(X_PLACEHOLDER, xpos);
-            modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos);
-            modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos);
+            modelPath = ExpandCoordinatePlaceholders(modelPath, xpos, ypos, zpos);
 
             return this.GetStorageStreamForPath(modelPath);
+        }
+
+        private static string ExpandCoordinatePlaceholders(string modelPath, object xpos, object ypos, object zpos)
+        {
+            modelPath = modelPath.Replace(X_PLACEHOLDER, xpos.ToString());
+            modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos.ToString());
+            modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos.ToString());
+            return modelPath;
         }
 
         public SetVersionResultContract GetSetVersion(string setId, string versionId)

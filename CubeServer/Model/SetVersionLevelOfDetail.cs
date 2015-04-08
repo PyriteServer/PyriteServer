@@ -55,10 +55,32 @@ namespace CubeServer.Model
             return zeroBaseWorld / this.worldToCubeRatio;
         }
 
+        public BoundingBox ToCubeCoordinates(BoundingBox worldCoordinates)
+        {
+            Vector3 min = worldCoordinates.Min - this.worldBounds.Min;
+            min /= this.worldToCubeRatio;
+
+            Vector3 max = worldCoordinates.Max - this.worldBounds.Min;
+            max /= this.worldToCubeRatio;
+
+            return new BoundingBox(min, max);
+        }
+
         public Vector3 ToWorldCoordinates(Vector3 cubeCoordinates)
         {
             Vector3 scaleCubeToWorld = this.worldToCubeRatio * cubeCoordinates;
             return scaleCubeToWorld + this.worldBounds.Min;
+        }
+
+        public BoundingBox ToWorldCoordinates(BoundingBox cubeCoordinates)
+        {
+            Vector3 min = this.worldToCubeRatio * cubeCoordinates.Min;
+            min += this.worldBounds.Min;
+
+            Vector3 max = this.worldToCubeRatio * cubeCoordinates.Max;
+            max += this.worldBounds.Max;
+
+            return new BoundingBox(min, max);
         }
 
         private void UpdateScale()
