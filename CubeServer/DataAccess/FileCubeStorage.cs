@@ -82,7 +82,7 @@ namespace CubeServer.DataAccess
             return Task.FromResult(new StorageStream(fs, info.Length, new MediaTypeHeaderValue(MimeMapping.GetMimeMapping(Path.GetExtension(texturePath)))));
         }
 
-        public Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos)
+        public Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos)
         {
             throw new NotImplementedException();
         }

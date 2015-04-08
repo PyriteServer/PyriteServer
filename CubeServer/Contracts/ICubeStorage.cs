@@ -21,6 +21,6 @@ namespace CubeServer.Contracts
 
         Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos);
 
-        Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos);
+        Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos);
     }
 }

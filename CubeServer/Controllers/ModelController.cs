@@ -14,8 +14,8 @@ namespace CubeServer.Controllers
     public class ModelController : ApiController
     {
         [HttpGet]
-        [Route("sets/{setid}/{version}/models/{detailLevel:int}/{xpos},{ypos},{zpos}")]
-        public async Task<IHttpActionResult> Get(string setid, string version, int detailLevel, string xpos, string ypos, string zpos)
+        [Route("sets/{setid}/{version}/models/{detailLevel}/{xpos},{ypos},{zpos}")]
+        public async Task<IHttpActionResult> Get(string setid, string version, string detailLevel, string xpos, string ypos, string zpos)
         {
             try
             {

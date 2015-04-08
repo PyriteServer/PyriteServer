@@ -118,17 +118,17 @@ namespace CubeServer.DataAccess
             }
         }
 
-        public Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos)
+        public Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos)
         {
             SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, version);
 
-            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Number == detail);
+            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name == detail);
             if (lod == null)
             {
                 throw new NotFoundException("detailLevel");
             }
 
-            string modelPath = lod.CubePathFormat;
+            string modelPath = lod.ModelTemplate.ToString();
             modelPath = modelPath.Replace(X_PLACEHOLDER, xpos);
             modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos);
             modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos);
@@ -239,7 +239,7 @@ namespace CubeServer.DataAccess
 
                         List<SetVersionLevelOfDetail> detailLevels;
                             
-                        detailLevels = await this.ExtractSetVersionDetailLevels(setMetadata, setMetadataUri);
+                        detailLevels = await this.ExtractDetailLevels(setMetadata, setMetadataUri);
 
                         currentSet.DetailLevels = detailLevels.ToArray();
                         setVersions.Add(currentSet);
@@ -259,7 +259,7 @@ namespace CubeServer.DataAccess
             return results;
         }
 
-        private async Task<List<SetVersionLevelOfDetail>> ExtractSetVersionDetailLevels(SetMetadataContract setMetadata, Uri baseUrl)
+        private async Task<List<SetVersionLevelOfDetail>> ExtractDetailLevels(SetMetadataContract setMetadata, Uri baseUrl)
         {
             List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
             foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MinimumLod))

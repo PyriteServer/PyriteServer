@@ -11,7 +11,6 @@ namespace CubeServer.Model
 
     public class SetVersionLevelOfDetail
     {
-        public string CubePathFormat { get; set; }
         public OcTree<CubeBounds> Cubes { get; set; }
         public Uri Metadata { get; set; }
         public Uri TextureTemplate { get; set; }
