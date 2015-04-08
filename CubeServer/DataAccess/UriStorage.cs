@@ -299,7 +299,7 @@ namespace CubeServer.DataAccess
         private async Task<List<SetVersionLevelOfDetail>> ExtractDetailLevels(SetMetadataContract setMetadata, Uri baseUrl)
         {
             List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
-            foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MinimumLod))
+            foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
             {
 
                 Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
