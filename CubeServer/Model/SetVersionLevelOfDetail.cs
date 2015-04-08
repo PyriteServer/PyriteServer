@@ -11,14 +11,66 @@ namespace CubeServer.Model
 
     public class SetVersionLevelOfDetail
     {
+        private Vector3 setSize = Vector3.One;
+        private BoundingBox worldBounds = new BoundingBox();
+        private Vector3 worldToCubeRatio = Vector3.One;
+
         public OcTree<CubeBounds> Cubes { get; set; }
         public Uri Metadata { get; set; }
-        public Uri TextureTemplate { get; set; }
         public Uri ModelTemplate { get; set; }
         public string Name { get; set; }
         public int Number { get; set; }
-        public Vector3 SetSize { get; set; }
+
+        public Vector3 SetSize
+        {
+            get { return this.setSize; }
+            set
+            {
+                this.setSize = value;
+                this.UpdateScale();
+            }
+        }
+
         public Vector2 TextureSetSize { get; set; }
-        public BoundingBox WorldBounds { get; set; }
+        public Uri TextureTemplate { get; set; }
+
+        public BoundingBox WorldBounds
+        {
+            get { return this.worldBounds; }
+            set
+            {
+                this.worldBounds = value;
+                this.UpdateScale();
+            }
+        }
+
+        public Vector3 WorldToCubeRatio
+        {
+            get { return this.worldToCubeRatio; }
+        }
+
+        public Vector3 ToCubeCoordinates(Vector3 worldCoordinates)
+        {
+            Vector3 zeroBaseWorld = worldCoordinates - this.worldBounds.Min;
+            return zeroBaseWorld / this.worldToCubeRatio;
+        }
+
+        public Vector3 ToWorldCoordinates(Vector3 cubeCoordinates)
+        {
+            Vector3 scaleCubeToWorld = this.worldToCubeRatio * cubeCoordinates;
+            return scaleCubeToWorld + this.worldBounds.Min;
+        }
+
+        private void UpdateScale()
+        {
+            if (this.setSize == Vector3.Zero)
+            {
+                this.worldToCubeRatio = Vector3.One;
+                return;
+            }
+
+            BoundingBox value = this.worldBounds;
+            this.worldToCubeRatio = (value.Max - value.Min) / this.SetSize;
+        }
     }
 }
