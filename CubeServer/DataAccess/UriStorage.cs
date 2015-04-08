@@ -25,6 +25,7 @@ namespace CubeServer.DataAccess
 
     public class UriStorage : ICubeStorage, IDisposable
     {
+        protected string storageRoot;
         private const string VERSION_PLACEHOLDER = "{v}";
         private const string X_PLACEHOLDER = "{x}";
         private const string Y_PLACEHOLDER = "{y}";
@@ -35,7 +36,6 @@ namespace CubeServer.DataAccess
         private ManualResetEvent onExit = new ManualResetEvent(false);
         private AutoResetEvent onLoad = new AutoResetEvent(false);
         private AutoResetEvent onLoadComplete = new AutoResetEvent(false);
-        protected string storageRoot;
 
         public UriStorage()
         {
@@ -65,34 +65,15 @@ namespace CubeServer.DataAccess
             get { return this.onLoadComplete; }
         }
 
-        public SetVersionResultContract GetSetVersion(string setId, string versionId)
+        public async Task<T> Deserialize<T>(Uri url)
         {
-            SetVersionResultContract result = new SetVersionResultContract();
+            return await this.Get(url, this.DeserializeStream<T>);
+        }
 
-            LoaderResults setData = this.loadedSetData.Get();
-            if (setData == null)
-            {
-                throw new NotFoundException("set data");
-            }
-
-            Set set;
-            if (!setData.Sets.TryGetValue(setId, out set))
-            {
-                throw new NotFoundException("set");
-            }
-
-            var version = set.Versions.FirstOrDefault(v => v.Name.Equals(versionId, StringComparison.InvariantCultureIgnoreCase));
-            if (version == null)
-            {
-                throw new NotFoundException("version");
-            }
-
-            result.Set = set.Name;
-            result.Version = version.Name;
-            result.TextureSize = new Vector2Contract(set.TextureDivisions);
-            result.DetailLevels = version.DetailLevels.Select(l => new LevelOfDetailContract { Name = l.Name, SetSize = new Vector3Contract(l.SetSize), WorldBounds = new BoundingBoxContract(l.WorldBounds)}).ToArray();
-
-            return result;
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public IEnumerable<VersionResultContract> EnumerateSetVersions(string setId)
@@ -100,17 +81,16 @@ namespace CubeServer.DataAccess
             LoaderResults setData = this.loadedSetData.Get();
             if (setData == null)
             {
-                return new VersionResultContract[] { };
+                throw new NotFoundException("setData");
             }
 
-            Set set;
-
-            if (!setData.Sets.TryGetValue(setId, out set))
+            Dictionary<string, SetVersion> setVersions;
+            if (!setData.Sets.TryGetValue(setId, out setVersions))
             {
                 return new VersionResultContract[] { };
             }
 
-            return set.Versions.Select(v => new VersionResultContract { Name = v.Name });
+            return setVersions.Values.Select(v => new VersionResultContract { Name = v.Version });
         }
 
         public IEnumerable<SetResultContract> EnumerateSets()
@@ -121,70 +101,7 @@ namespace CubeServer.DataAccess
                 return new SetResultContract[] { };
             }
 
-            return setData.Sets.Values.Select(s => new SetResultContract { Name = s.Name });
-        }
-
-        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos)
-        {
-            if (this.LastKnownGood == null || this.LastKnownGood.Sets == null || this.LastKnownGood.Sets[setId] == null ||
-                this.LastKnownGood.Sets[setId].TexturePathFormat == null)
-            {
-                throw new NotFoundException("Texture");
-            }
-            string texturePath = this.LastKnownGood.Sets[setId].TexturePathFormat;
-            texturePath = texturePath.Replace(VERSION_PLACEHOLDER, version);
-            texturePath = texturePath.Replace(X_PLACEHOLDER, xpos);
-            texturePath = texturePath.Replace(Y_PLACEHOLDER, ypos);
-            return GetStorageStreamForPath(texturePath);
-        }
-
-        public Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos)
-        {
-            if (this.LastKnownGood == null || this.LastKnownGood.Sets == null || this.LastKnownGood.Sets[setId] == null ||
-                this.LastKnownGood.Sets[setId].Versions == null)
-            {
-                throw new NotFoundException("model");
-            }
-
-            SetVersion setVersion = this.LastKnownGood.Sets[setId].Versions.First((sv) => sv.Name == version);
-            if (setVersion == null)
-            {
-                throw new NotFoundException("version");
-            }
-
-            SetVersionLevelOfDetail lod = setVersion.DetailLevels.First(l => l.Number == detail);
-            if (lod == null)
-            {
-                throw new NotFoundException("detailLevel");
-            }
-
-            string modelPath = lod.CubePathFormat;
-
-            modelPath = modelPath.Replace(X_PLACEHOLDER, xpos);
-            modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos);
-            modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos);
-
-            return GetStorageStreamForPath(modelPath);
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        public async Task<T> Deserialize<T>(Uri url)
-        {
-            Func<Stream, T> deserialize = sourceStream =>
-                                          {
-                                              using (StreamReader sr = new StreamReader(sourceStream))
-                                              using (JsonTextReader jr = new JsonTextReader(sr))
-                                              {
-                                                  return new JsonSerializer().Deserialize<T>(jr);
-                                              }
-                                          };
-
-            return await this.Get(url, deserialize);
+            return setData.Sets.Keys.Select(s => new SetResultContract { Name = s });
         }
 
         public async Task<T> Get<T>(Uri url, Func<Stream, T> perform)
@@ -201,15 +118,66 @@ namespace CubeServer.DataAccess
             }
         }
 
-        private async Task<StorageStream> GetStorageStreamForPath(string path)
+        public Task<StorageStream> GetModelStream(string setId, string version, int detail, string xpos, string ypos, string zpos)
         {
-            Uri targetUri = new Uri(path);
-            targetUri = this.TransformUri(targetUri);
-            WebRequest request = WebRequest.Create(targetUri);
-            WebResponse response = await request.GetResponseAsync();
+            SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, version);
 
-            // Storage stream is used in a StreamResult which closes the stream for us when done
-            return new StorageStream(response.GetResponseStream(), response.ContentLength, new MediaTypeHeaderValue(response.ContentType));
+            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Number == detail);
+            if (lod == null)
+            {
+                throw new NotFoundException("detailLevel");
+            }
+
+            string modelPath = lod.CubePathFormat;
+            modelPath = modelPath.Replace(X_PLACEHOLDER, xpos);
+            modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos);
+            modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos);
+
+            return this.GetStorageStreamForPath(modelPath);
+        }
+
+        public SetVersionResultContract GetSetVersion(string setId, string versionId)
+        {
+            SetVersionResultContract result = new SetVersionResultContract();
+
+            LoaderResults setData = this.loadedSetData.Get();
+            if (setData == null)
+            {
+                throw new NotFoundException("setData");
+            }
+
+            SetVersion setVersion = setData.FindSetVersion(setId, versionId);
+
+            result.Set = setVersion.Name;
+            result.Version = setVersion.Version;
+            result.DetailLevels =
+                setVersion.DetailLevels.Select(
+                    l =>
+                        new LevelOfDetailContract
+                        {
+                            Name = l.Name,
+                            SetSize = new Vector3Contract(l.SetSize),
+                            WorldBounds = new BoundingBoxContract(l.WorldBounds),
+                            TextureSetSize = new Vector2Contract(l.TextureSetSize)
+                        }).ToArray();
+
+            return result;
+        }
+
+        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos)
+        {
+            SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, version);
+
+            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name.Equals(detail, StringComparison.OrdinalIgnoreCase));
+            if (lod == null)
+            {
+                throw new NotFoundException("detailLevel");
+            }
+
+            string texturePath = lod.TextureTemplate.ToString();
+            texturePath = texturePath.Replace(X_PLACEHOLDER, xpos);
+            texturePath = texturePath.Replace(Y_PLACEHOLDER, ypos);
+            return this.GetStorageStreamForPath(texturePath);
         }
 
         public async Task<LoaderResults> LoadMetadata()
@@ -217,7 +185,8 @@ namespace CubeServer.DataAccess
             LoaderResults results = new LoaderResults();
 
             List<LoaderException> exceptions = new List<LoaderException>();
-            Dictionary<string, Set> sets = new Dictionary<string, Set>(StringComparer.InvariantCultureIgnoreCase);
+            Dictionary<string, Dictionary<string, SetVersion>> sets =
+                new Dictionary<string, Dictionary<string, SetVersion>>(StringComparer.InvariantCultureIgnoreCase);
 
             SetContract[] setsMetadata = null;
             Uri storageRootUri = null;
@@ -239,71 +208,50 @@ namespace CubeServer.DataAccess
                 return results;
             }
 
+            List<SetVersion> setVersions = new List<SetVersion>();
+
             foreach (SetContract set in setsMetadata)
             {
                 try
                 {
-                    Uri setMetadataUri = new Uri(storageRootUri, set.Url);
-                    Trace.WriteLine(String.Format("Set: {0}, Url {1}", set.Name, setMetadataUri));
-                    SetMetadataContract setMetadata = await this.Deserialize<SetMetadataContract>(setMetadataUri);
-                    if (setMetadata == null)
+                    foreach (SetVersionContract version in set.Versions)
                     {
-                        throw new SerializationException("Set metadata deserialization Failed");
+                        Uri setMetadataUri = new Uri(storageRootUri, version.Url);
+
+                        Trace.WriteLine(String.Format("Set: {0}, Url {1}", set.Name, setMetadataUri));
+                        SetMetadataContract setMetadata = await this.Deserialize<SetMetadataContract>(setMetadataUri);
+                        if (setMetadata == null)
+                        {
+                            throw new SerializationException("Set metadata deserialization Failed");
+                        }
+
+                        Trace.WriteLine(String.Format("Discovered set {0}/{1} at {2}", set.Name, version.Name, version.Url));
+
+                        Uri material = new Uri(setMetadataUri, setMetadata.Mtl);
+
+                        SetVersion currentSet = new SetVersion
+                                                {
+                                                    SourceUri = setMetadataUri,
+                                                    Name = set.Name,
+                                                    Version = version.Name,
+                                                    Material = material
+                                                };
+
+                        List<SetVersionLevelOfDetail> detailLevels;
+                            
+                        detailLevels = await this.ExtractSetVersionDetailLevels(setMetadata, setMetadataUri);
+
+                        currentSet.DetailLevels = detailLevels.ToArray();
+                        setVersions.Add(currentSet);
                     }
-
-                    Trace.WriteLine(String.Format("Discovered set {0} at {1}", set.Name, set.Url));
-
-                    Set currentSet = new Set
-                                     {
-                                         SourceUri = setMetadataUri,
-                                         Name = set.Name,
-                                         TextureDivisions = new Vector2(setMetadata.TextureSubdivide, setMetadata.TextureSubdivide),
-                                         TexturePathFormat = setMetadata.TexturePath
-                                     };
-
-                    // TODO: Set versioning story
-
-                    List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
-                    foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumViewport, setMetadata.MaximumViewport))
-                    {
-                        string detailLevelMetadata = setMetadata.MetadataTemplate.Replace("{v}", detailLevel.ToString(CultureInfo.InvariantCulture));
-                        Uri detailLevelMetadataUri = new Uri(setMetadataUri, detailLevelMetadata);
-
-                        CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(detailLevelMetadataUri);
-
-                        OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
-                        octree.UpdateTree();
-
-                        var cubeBounds = cubeMetadata.GridSize;
-                        var worldBounds = cubeMetadata.Extents;
-
-                        SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail
-                                                       {
-                                                           // TODO replace this with l<detailIndex>
-                                                           Name = "v" + detailLevel.ToString(CultureInfo.InvariantCulture),
-                                                           SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z),
-                                                           WorldBounds = new BoundingBox(new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin), new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax)),
-                                                           Cubes = octree,
-                                                           Number = detailLevel,
-                                                           CubePathFormat =
-                                                               setMetadata.CubeTemplate.Replace(
-                                                                   "{v}",
-                                                                   detailLevel.ToString(CultureInfo.InvariantCulture)).Replace(".obj", ".ebo")
-                                                       };
-
-                        detailLevels.Add(currentSetLevelOfDetail);
-                    }
-
-                    // TODO Set revisioning and versioning story
-                    currentSet.Versions = new []{new SetVersion { Name = "version1" , DetailLevels = detailLevels.OrderBy(v => v.Number).ToArray()}};
-
-                    sets.Add(currentSet.Name, currentSet);
                 }
                 catch (Exception ex)
                 {
-                    exceptions.Add(new LoaderException("Set", set.Url, ex));
+                    exceptions.Add(new LoaderException("Set", storageRootUri.ToString(), ex));
                 }
             }
+
+            sets = setVersions.GroupBy(s => s.Name).ToDictionary(s => s.Key, this.GenerateVersionMap, StringComparer.OrdinalIgnoreCase);
 
             results.Errors = exceptions.ToArray();
             results.Sets = sets;
@@ -311,9 +259,40 @@ namespace CubeServer.DataAccess
             return results;
         }
 
-        protected virtual Uri TransformUri(Uri sourceUri)
+        private async Task<List<SetVersionLevelOfDetail>> ExtractSetVersionDetailLevels(SetMetadataContract setMetadata, Uri baseUrl)
         {
-            return sourceUri;
+            List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
+            foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MinimumLod))
+            {
+
+                Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
+                CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
+
+                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
+                octree.UpdateTree();
+
+                Vector3 cubeBounds = cubeMetadata.SetSize;
+
+                ExtentsContract worldBounds = cubeMetadata.WorldBounds;
+
+                SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
+                currentSetLevelOfDetail.Metadata = lodMetadataUri;
+                currentSetLevelOfDetail.Number = detailLevel;
+                currentSetLevelOfDetail.Cubes = octree;
+                currentSetLevelOfDetail.WorldBounds = new BoundingBox(
+                    new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
+                    new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+                currentSetLevelOfDetail.SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z);
+                currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
+
+                currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
+                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri,"{x}_{y}_{z}.obj");
+
+                currentSetLevelOfDetail.TextureSetSize = cubeMetadata.TextureSetSize;
+
+                detailLevels.Add(currentSetLevelOfDetail);
+            }
+            return detailLevels;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -356,6 +335,36 @@ namespace CubeServer.DataAccess
             }
 
             this.disposed = true;
+        }
+
+        protected virtual Uri TransformUri(Uri sourceUri)
+        {
+            return sourceUri;
+        }
+
+        private T DeserializeStream<T>(Stream stream)
+        {
+            using (StreamReader sr = new StreamReader(stream))
+            using (JsonTextReader jr = new JsonTextReader(sr))
+            {
+                return new JsonSerializer().Deserialize<T>(jr);
+            }
+        }
+
+        private Dictionary<string, SetVersion> GenerateVersionMap(IGrouping<string, SetVersion> setVersions)
+        {
+            return setVersions.ToDictionary(v => v.Version, v => v, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private async Task<StorageStream> GetStorageStreamForPath(string path)
+        {
+            Uri targetUri = new Uri(path);
+            targetUri = this.TransformUri(targetUri);
+            WebRequest request = WebRequest.Create(targetUri);
+            WebResponse response = await request.GetResponseAsync();
+
+            // Storage stream is used in a StreamResult which closes the stream for us when done
+            return new StorageStream(response.GetResponseStream(), response.ContentLength, new MediaTypeHeaderValue(response.ContentType));
         }
 
         private void LoaderThread()

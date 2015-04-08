@@ -10,7 +10,6 @@ namespace CubeServer.Controllers
     using System.Linq;
     using System.Web.Http;
     using CubeServer.Contracts;
-    using CubeServer.DataAccess;
     using CubeServer.DataAccess.Json;
 
     public class SetController : ApiController

@@ -16,4 +16,5 @@ namespace CubeServer.DataAccess.Json
         [JsonProperty("url")]
         public string Url { get; set; }
     }
+
 }

@@ -8,13 +8,8 @@ namespace CubeServer.DataAccess.Json
 {
     public class SetMetadataContract
     {
-        public string CubeTemplate { get; set; }
-        public string JpgTemplate { get; set; }
-        public int MaximumViewport { get; set; }
-        public string MetadataTemplate { get; set; }
-        public int MinimumViewport { get; set; }
-        public string MtlTemplate { get; set; }
-        public string TexturePath { get; set; }
-        public int TextureSubdivide { get; set; }
+        public int MinimumLod { get; set; }
+        public int MaximumLod { get; set; }
+        public string Mtl { get; set; }
     }
 }

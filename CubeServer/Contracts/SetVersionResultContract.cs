@@ -16,9 +16,6 @@ namespace CubeServer.Contracts
         [JsonProperty("set")]
         public string Set { get; set; }
 
-        [JsonProperty("textureSize")]
-        public Vector2Contract TextureSize { get; set; }
-
         [JsonProperty("version")]
         public string Version { get; set; }
     }

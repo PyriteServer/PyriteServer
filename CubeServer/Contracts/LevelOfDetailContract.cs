@@ -16,6 +16,9 @@ namespace CubeServer.Contracts
         [JsonProperty("setSize")]
         public Vector3Contract SetSize { get; set; }
 
+        [JsonProperty("textureSetSize")]
+        public Vector2Contract TextureSetSize { get; set; }
+
         [JsonProperty("worldBounds")]
         public BoundingBoxContract WorldBounds { get; set; }
     }

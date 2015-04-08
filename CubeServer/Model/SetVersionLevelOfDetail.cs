@@ -6,16 +6,20 @@
 
 namespace CubeServer.Model
 {
+    using System;
     using Microsoft.Xna.Framework;
 
     public class SetVersionLevelOfDetail
     {
-        public Vector2 TextureSetSize { get; set; }
-        public Vector3 SetSize { get; set; }
-        public BoundingBox WorldBounds { get; set; }
         public string CubePathFormat { get; set; }
         public OcTree<CubeBounds> Cubes { get; set; }
+        public Uri Metadata { get; set; }
+        public Uri TextureTemplate { get; set; }
+        public Uri ModelTemplate { get; set; }
         public string Name { get; set; }
         public int Number { get; set; }
+        public Vector3 SetSize { get; set; }
+        public Vector2 TextureSetSize { get; set; }
+        public BoundingBox WorldBounds { get; set; }
     }
 }

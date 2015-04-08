@@ -13,7 +13,7 @@ namespace CubeServer.DataAccess.Json
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("url")]
-        public string Url { get; set; }
+        [JsonProperty("versions")]
+        public SetVersionContract[] Versions { get; set; }
     }
 }

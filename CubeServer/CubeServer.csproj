@@ -183,6 +183,7 @@
     <None Include="Properties\PublishProfiles\pyrite.pubxml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="NewFolder1\" />
     <Folder Include="SampleData\" />
   </ItemGroup>
   <ItemGroup>
