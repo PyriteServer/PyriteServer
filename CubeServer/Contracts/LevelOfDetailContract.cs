@@ -21,5 +21,8 @@ namespace CubeServer.Contracts
 
         [JsonProperty("worldBounds")]
         public BoundingBoxContract WorldBounds { get; set; }
+
+        [JsonProperty("worldCubeScale")]
+        public Vector3Contract WorldCubeScaling { get; set; }
     }
 }

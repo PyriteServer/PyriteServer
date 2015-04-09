@@ -195,7 +195,8 @@ namespace CubeServer.DataAccess
                             Name = l.Name,
                             SetSize = new Vector3Contract(l.SetSize),
                             WorldBounds = new BoundingBoxContract(l.WorldBounds),
-                            TextureSetSize = new Vector2Contract(l.TextureSetSize)
+                            TextureSetSize = new Vector2Contract(l.TextureSetSize),
+                            WorldCubeScaling = new Vector3Contract(l.WorldToCubeRatio)
                         }).ToArray();
 
             return result;
