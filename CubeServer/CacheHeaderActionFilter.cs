@@ -8,10 +8,7 @@ namespace CubeServer
 {
     using System;
     using System.Net;
-    using System.Net.Http;
     using System.Net.Http.Headers;
-    using System.Threading;
-    using System.Threading.Tasks;
     using System.Web.Http.Filters;
 
     public class CacheControlAttribute : ActionFilterAttribute
@@ -30,7 +27,7 @@ namespace CubeServer
                 return;
             }
 
-            actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.FromSeconds(maxAge), Public = true };
+            actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.FromSeconds(this.maxAge), Public = true };
             base.OnActionExecuted(actionExecutedContext);
         }
     }
