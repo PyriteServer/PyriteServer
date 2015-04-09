@@ -15,11 +15,12 @@ namespace CubeServer.Controllers
     {
         [HttpGet]
         [Route("sets/{setid}/{version}/models/{detailLevel}/{xpos},{ypos},{zpos}")]
-        public async Task<IHttpActionResult> Get(string setid, string version, string detailLevel, string xpos, string ypos, string zpos)
+        [CacheControl(1800)]
+        public async Task<IHttpActionResult> Get(string setid, string version, string detailLevel, string xpos, string ypos, string zpos, string fmt = null)
         {
             try
             {
-                StorageStream modelStream = await Dependency.Storage.GetModelStream(setid, version, detailLevel, xpos, ypos, zpos);
+                StorageStream modelStream = await Dependency.Storage.GetModelStream(setid, version, detailLevel, xpos, ypos, zpos, fmt);
                 return new StreamResult(modelStream, this.Request);
             }
             catch (NotFoundException)

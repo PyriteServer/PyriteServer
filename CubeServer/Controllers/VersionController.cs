@@ -6,18 +6,15 @@
 
 namespace CubeServer.Controllers
 {
-    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Linq;
     using System.Web.Http;
     using CubeServer.Contracts;
-    using CubeServer.DataAccess;
-    using CubeServer.Model;
 
     public class VersionController : ApiController
     {
         [HttpGet]
         [Route("sets/{setid}/{versionid}")]
+        [CacheControl(1800)]
         public IHttpActionResult Get(string setid, string versionid)
         {
             try

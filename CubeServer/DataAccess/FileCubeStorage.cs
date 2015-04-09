@@ -11,6 +11,7 @@ namespace CubeServer.DataAccess
     using System.IO;
     using System.Net.Http.Headers;
     using System.Security;
+    using System.Security.Permissions;
     using System.Threading.Tasks;
     using System.Web;
     using CubeServer.Contracts;
@@ -83,7 +84,7 @@ namespace CubeServer.DataAccess
             return Task.FromResult(new StorageStream(fs, info.Length, new MediaTypeHeaderValue(MimeMapping.GetMimeMapping(Path.GetExtension(texturePath)))));
         }
 
-        public Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos)
+        public Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos, string format)
         {
             throw new NotImplementedException();
         }

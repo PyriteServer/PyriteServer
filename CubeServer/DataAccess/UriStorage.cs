@@ -26,6 +26,7 @@ namespace CubeServer.DataAccess
     public class UriStorage : ICubeStorage, IDisposable
     {
         protected string storageRoot;
+        private const string FORMAT_PLACEHOLDER = "{format}";
         private const string X_PLACEHOLDER = "{x}";
         private const string Y_PLACEHOLDER = "{y}";
         private const string Z_PLACEHOLDER = "{z}";
@@ -143,7 +144,7 @@ namespace CubeServer.DataAccess
             }
         }
 
-        public Task<StorageStream> GetModelStream(string setId, string versionId, string detail, string xpos, string ypos, string zpos)
+        public Task<StorageStream> GetModelStream(string setId, string versionId, string detail, string xpos, string ypos, string zpos, string format)
         {
             LoaderResults setData = this.loadedSetData.Get();
             if (setData == null)
@@ -159,17 +160,28 @@ namespace CubeServer.DataAccess
                 throw new NotFoundException("detailLevel");
             }
 
+            ModelFormats modelFormat;
+            if (format == null)
+            {
+                modelFormat = ModelFormats.Ebo;
+            }
+            else if(!ModelFormats.TryParse(format, true, out modelFormat))
+            {
+                throw new NotFoundException("format");
+            }
+
             string modelPath = lod.ModelTemplate.ToString();
-            modelPath = ExpandCoordinatePlaceholders(modelPath, xpos, ypos, zpos);
+            modelPath = ExpandCoordinatePlaceholders(modelPath, xpos, ypos, zpos, modelFormat);
 
             return this.GetStorageStreamForPath(modelPath);
         }
 
-        private static string ExpandCoordinatePlaceholders(string modelPath, object xpos, object ypos, object zpos)
+        private static string ExpandCoordinatePlaceholders(string modelPath, object xpos, object ypos, object zpos, ModelFormats format)
         {
             modelPath = modelPath.Replace(X_PLACEHOLDER, xpos.ToString());
             modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos.ToString());
             modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos.ToString());
+            modelPath = modelPath.Replace(FORMAT_PLACEHOLDER, format.ToString().ToLower());
             return modelPath;
         }
 
@@ -275,9 +287,7 @@ namespace CubeServer.DataAccess
                                                     Material = material
                                                 };
 
-                        List<SetVersionLevelOfDetail> detailLevels;
-                            
-                        detailLevels = await this.ExtractDetailLevels(setMetadata, setMetadataUri);
+                        List<SetVersionLevelOfDetail> detailLevels = await this.ExtractDetailLevels(setMetadata, setMetadataUri);
 
                         currentSet.DetailLevels = detailLevels.ToArray();
                         setVersions.Add(currentSet);
@@ -324,7 +334,7 @@ namespace CubeServer.DataAccess
                 currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
 
                 currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
-                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri,"{x}_{y}_{z}.obj");
+                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri,"{x}_{y}_{z}.{format}");
 
                 currentSetLevelOfDetail.TextureSetSize = cubeMetadata.TextureSetSize;
 
@@ -397,6 +407,7 @@ namespace CubeServer.DataAccess
         private async Task<StorageStream> GetStorageStreamForPath(string path)
         {
             Uri targetUri = new Uri(path);
+            Trace.WriteLine(targetUri, "UriStorage::GetStorageStreamFromPath");
             targetUri = this.TransformUri(targetUri);
             WebRequest request = WebRequest.Create(targetUri);
             WebResponse response = await request.GetResponseAsync();

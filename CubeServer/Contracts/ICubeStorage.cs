@@ -22,7 +22,7 @@ namespace CubeServer.Contracts
 
         Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos);
 
-        Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos);
+        Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos, string format);
 
         IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox);
     }

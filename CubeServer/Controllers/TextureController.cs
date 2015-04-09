@@ -15,6 +15,7 @@ namespace CubeServer.Controllers
     {
         [HttpGet]
         [Route("sets/{setid}/{version}/textures/{detail}/{xpos},{ypos}")]
+        [CacheControl(1800)]
         public async Task<IHttpActionResult> Get(string setid, string version, string detail, string xpos, string ypos)
         {
             try

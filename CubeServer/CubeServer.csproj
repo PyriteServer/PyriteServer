@@ -109,6 +109,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheHeaderActionFilter.cs" />
     <Compile Include="Contracts\BoundingBoxContract.cs" />
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ISecretsProvider.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="DataAccess\Json\SetMetadataContract.cs" />
     <Compile Include="DataAccess\Json\SetResultContract.cs" />
     <Compile Include="DataAccess\Json\SetVersionContract.cs" />
+    <Compile Include="DataAccess\ModelFormats.cs" />
     <Compile Include="DataAccess\UriStorage.cs" />
     <Compile Include="Dependency.cs" />
     <Compile Include="CubeBounds.cs" />
