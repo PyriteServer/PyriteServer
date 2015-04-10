@@ -8,6 +8,7 @@ namespace CubeServerTest
 {
     using System.Collections.Generic;
     using CubeServer;
+    using CubeServer.Model;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Xna.Framework;
 

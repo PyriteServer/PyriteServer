@@ -9,6 +9,7 @@ namespace CubeServer.DataAccess
     using System;
     using System.IO;
     using CubeServer.DataAccess.Json;
+    using CubeServer.Model;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
 

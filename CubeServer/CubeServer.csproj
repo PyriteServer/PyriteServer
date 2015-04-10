@@ -111,6 +111,7 @@
   <ItemGroup>
     <Compile Include="CacheHeaderActionFilter.cs" />
     <Compile Include="Contracts\BoundingBoxContract.cs" />
+    <Compile Include="Contracts\IBounds.cs" />
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ISecretsProvider.cs" />
     <Compile Include="Contracts\LevelOfDetailContract.cs" />
@@ -141,9 +142,6 @@
     <Compile Include="DataAccess\ModelFormats.cs" />
     <Compile Include="DataAccess\UriStorage.cs" />
     <Compile Include="Dependency.cs" />
-    <Compile Include="CubeBounds.cs" />
-    <Compile Include="IBounds.cs" />
-    <Compile Include="Intersection.cs" />
     <Compile Include="Microsoft.Xna\BoundingBox.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -159,11 +157,13 @@
     <Compile Include="Microsoft.Xna\Ray.cs" />
     <Compile Include="Microsoft.Xna\Vector2.cs" />
     <Compile Include="Microsoft.Xna\Vector4.cs" />
+    <Compile Include="Model\CubeBounds.cs" />
+    <Compile Include="Model\Intersection.cs" />
+    <Compile Include="Model\OcTree.cs" />
     <Compile Include="Model\Set.cs" />
     <Compile Include="Model\SetVersion.cs" />
     <Compile Include="Model\SetVersionLevelOfDetail.cs" />
     <Compile Include="NotFoundException.cs" />
-    <Compile Include="OcTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Results\StreamResult.cs" />
     <Compile Include="Startup.cs" />

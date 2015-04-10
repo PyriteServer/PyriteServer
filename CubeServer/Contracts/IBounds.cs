@@ -4,8 +4,9 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace CubeServer.Contracts
 {
+    using CubeServer.Model;
     using Microsoft.Xna.Framework;
 
     public interface IBounds<TObject>

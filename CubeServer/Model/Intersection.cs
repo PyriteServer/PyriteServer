@@ -4,13 +4,13 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace CubeServer.Model
 {
     using Microsoft.Xna.Framework;
 
     public class Intersection<TObject>
     {
-        private readonly bool m_hasHit = false;
+        private readonly bool hasHit = false;
 
         public Intersection()
         {
@@ -27,12 +27,12 @@ namespace CubeServer
             this.Normal = hitNormal;
             this.Ray = ray;
             this.Distance = distance;
-            this.m_hasHit = true;
+            this.hasHit = true;
         }
 
         public Intersection(TObject hitObject = default(TObject))
         {
-            this.m_hasHit = hitObject != null;
+            this.hasHit = hitObject != null;
             this.Object = hitObject;
             this.Position = Vector3.Zero;
             this.Normal = Vector3.Zero;
@@ -44,7 +44,7 @@ namespace CubeServer
 
         public bool HasHit
         {
-            get { return this.m_hasHit; }
+            get { return this.hasHit; }
         }
 
         public Vector3 Normal { get; private set; }

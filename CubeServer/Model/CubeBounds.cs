@@ -4,9 +4,10 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace CubeServer.Model
 {
     using System;
+    using CubeServer.Contracts;
     using Microsoft.Xna.Framework;
 
     public class CubeBounds : IBounds<CubeBounds>
@@ -36,11 +37,11 @@ namespace CubeServer
 
             if (obj.BoundingBox.Min != obj.BoundingBox.Max)
             {
-                ir = Intersects(obj.BoundingBox);
+                ir = this.Intersects(obj.BoundingBox);
             }
             else if (obj.BoundingSphere.Radius != 0f)
             {
-                ir = Intersects(obj.BoundingSphere);
+                ir = this.Intersects(obj.BoundingSphere);
             }
             else
                 return null;
