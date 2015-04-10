@@ -74,11 +74,14 @@ namespace CubeServer.Model
                     return false;
                 }
 
-                for (int a = 0; a < 8; a++)
+                if (activeOctants != 0)
                 {
-                    if (this.octants[a] != null && !this.octants[a].IsEmpty)
+                    for (int a = 0; a < 8; a++)
                     {
-                        return false;
+                        if (this.octants[a] != null && !this.octants[a].IsEmpty)
+                        {
+                            return false;
+                        }
                     }
                 }
 
@@ -322,11 +325,13 @@ namespace CubeServer.Model
             return ret;
         }
 
+        private static IEnumerable<Intersection<TObject>> NoIntersections = new Intersection<TObject>[] { };
+
         private IEnumerable<Intersection<TObject>> GetIntersection(BoundingBox box)
         {
             if (this.objects.Count == 0 && this.HasChildren == false)
             {
-                return null;
+                return NoIntersections;
             }
 
             List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
@@ -354,13 +359,7 @@ namespace CubeServer.Model
                 if((box.Contains(octantRegion) == ContainmentType.Intersects || box.Contains(octantRegion) == ContainmentType.Contains))
                 {
                     IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(box);
-                    if (hitList != null)
-                    {
-                        foreach (Intersection<TObject> ir in hitList)
-                        {
-                            ret.Add(ir);
-                        }
-                    }
+                    ret.AddRange(hitList);
                 }
             }
             return ret;
@@ -370,7 +369,7 @@ namespace CubeServer.Model
         {
             if (this.objects.Count == 0 && this.HasChildren == false)
             {
-                return null;
+                return NoIntersections;
             }
 
             List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
@@ -393,13 +392,7 @@ namespace CubeServer.Model
                      frustum.Contains(this.octants[a].region) == ContainmentType.Contains))
                 {
                     IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(frustum);
-                    if (hitList != null)
-                    {
-                        foreach (Intersection<TObject> ir in hitList)
-                        {
-                            ret.Add(ir);
-                        }
-                    }
+                    ret.AddRange(hitList);
                 }
             }
             return ret;
@@ -409,7 +402,7 @@ namespace CubeServer.Model
         {
             if (this.objects.Count == 0 && this.HasChildren == false) //terminator for any recursion
             {
-                return null;
+                return NoIntersections;
             }
 
             List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
@@ -435,13 +428,7 @@ namespace CubeServer.Model
                 if (this.octants[a] != null && this.octants[a].region.Intersects(intersectRay) != null)
                 {
                     IEnumerable<Intersection<TObject>> hits = this.octants[a].GetIntersection(intersectRay);
-                    if (hits != null)
-                    {
-                        foreach (Intersection<TObject> ir in hits)
-                        {
-                            ret.Add(ir);
-                        }
-                    }
+                    ret.AddRange(hits);
                 }
             }
 

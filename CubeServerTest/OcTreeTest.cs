@@ -116,14 +116,30 @@ namespace CubeServerTest
             Assert.AreEqual(Vector3.Zero, testOcTree.Region.Min);
             Assert.AreEqual(new Vector3(4, 4, 4), testOcTree.Region.Max);
 
-
             OcTreeUtilities.Dump(testOcTree);
         }
 
-        public BoundingBox MakeCube(Vector3 min, float size)
+        [TestMethod]
+        public void IsEmpty()
         {
-            Vector3 max = new Vector3 { X = min.X + size, Y = min.Y + size, Z = min.Z + size };
-            return new BoundingBox { Min = min, Max = max };
+            List<CubeBounds> testBounds = new List<CubeBounds>();
+
+            testBounds.Add(new CubeBounds { BoundingBox = this.oneBoundingBox });
+            testBounds.Add(new CubeBounds { BoundingBox = new BoundingBox(new Vector3(3, 3, 3), new Vector3(3, 1, 0)) });
+
+            OcTree<CubeBounds> testOcTree = new OcTree<CubeBounds>(this.zeroBoundingBox, testBounds);
+
+            // pending insertions also invalidate IsEmpty
+            Assert.IsFalse(testOcTree.IsEmpty);
+
+            Assert.IsFalse(testOcTree.HasChildren);
+            Assert.IsTrue(testOcTree.IsRoot);
+            Assert.IsNotNull(testOcTree.Region);
+            Assert.AreEqual(Vector3.Zero, testOcTree.Region.Max);
+
+            testOcTree.UpdateTree();
+
+            Assert.IsFalse(testOcTree.IsEmpty);
         }
 
         [TestMethod]
@@ -158,6 +174,12 @@ namespace CubeServerTest
             // No Intersects
             Ray ray3 = new Ray(new Vector3(3, 0, 0), new Vector3(1, 1, 1));
             Assert.AreEqual(0, testOcTree.AllIntersections(ray3).Count());
+        }
+
+        private BoundingBox MakeCube(Vector3 min, float size)
+        {
+            Vector3 max = new Vector3 { X = min.X + size, Y = min.Y + size, Z = min.Z + size };
+            return new BoundingBox { Min = min, Max = max };
         }
     }
 }
