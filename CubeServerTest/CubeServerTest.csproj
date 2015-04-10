@@ -50,7 +50,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FileCubeStorageTest.cs" />
     <Compile Include="MetadataLoaderTest.cs" />
     <Compile Include="OcTreeTest.cs" />
     <Compile Include="OcTreeUtilities.cs" />
