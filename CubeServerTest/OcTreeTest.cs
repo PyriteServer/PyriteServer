@@ -176,6 +176,37 @@ namespace CubeServerTest
             Assert.AreEqual(0, testOcTree.AllIntersections(ray3).Count());
         }
 
+        [TestMethod]
+        public void SphereIntersectionTest()
+        {
+            List<CubeBounds> testBounds = new List<CubeBounds>();
+
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(Vector3.Zero, 1) });
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(new Vector3(1, 1, 1), 1) });
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(new Vector3(2, 2, 2), 1) });
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(new Vector3(3, 3, 3), 1) });
+
+            OcTree<CubeBounds> testOcTree = new OcTree<CubeBounds>(this.zeroBoundingBox, testBounds);
+            testOcTree.UpdateTree();
+            OcTreeUtilities.Dump(testOcTree);
+
+            Assert.IsTrue(testOcTree.HasChildren);
+            Assert.IsTrue(testOcTree.IsRoot);
+            Assert.IsNotNull(testOcTree.Region);
+            Assert.AreEqual(Vector3.Zero, testOcTree.Region.Min);
+            Assert.AreEqual(new Vector3(4, 4, 4), testOcTree.Region.Max);
+
+            Assert.AreEqual(0, testOcTree.Objects.Count);
+
+            // Sphere Intersects - unlike bounding box, surface intersections are ignored
+            BoundingSphere sphere1 = new BoundingSphere(new Vector3(2, 2, 2), 0.5f);
+            Assert.AreEqual(2, testOcTree.AllIntersections(sphere1).Count());
+
+            BoundingSphere sphere2 = new BoundingSphere(new Vector3(2, 2, 2), 1f);
+            Assert.AreEqual(2, testOcTree.AllIntersections(sphere2).Count());
+
+        }
+
         private BoundingBox MakeCube(Vector3 min, float size)
         {
             Vector3 max = new Vector3 { X = min.X + size, Y = min.Y + size, Z = min.Z + size };

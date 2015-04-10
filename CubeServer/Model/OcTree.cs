@@ -1,5 +1,5 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="OctTree.cs" company="Microsoft Corporation">
+// // // <copyright file="OcTree.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
@@ -8,6 +8,7 @@ namespace CubeServer.Model
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using CubeServer.Contracts;
     using Microsoft.Xna.Framework;
@@ -15,8 +16,13 @@ namespace CubeServer.Model
     public class OcTree<TObject> where TObject : IBounds<TObject>
     {
         private const int DEFAULT_MIN_SIZE = 1;
+        private static readonly IEnumerable<Intersection<TObject>> NoIntersections = new Intersection<TObject>[] { };
 
-        private readonly uint[] debruijnPosition = { 0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30, 8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26, 5, 4, 31 };
+        private readonly uint[] debruijnPosition =
+        {
+            0, 9, 1, 10, 13, 21, 2, 29, 11, 14, 16, 18, 22, 25, 3, 30, 8, 12, 20, 28, 15, 17, 24, 7, 19, 27, 23, 6, 26,
+            5, 4, 31
+        };
 
         private readonly Queue<TObject> insertionQueue = new Queue<TObject>();
 
@@ -50,16 +56,6 @@ namespace CubeServer.Model
             this.minimumSize = minSize;
         }
 
-        public int MinimumSize
-        {
-            get { return this.minimumSize; }
-        }
-
-        public byte OctantMask
-        {
-            get { return this.activeOctants; }
-        }
-
         public bool HasChildren
         {
             get { return this.activeOctants != 0; }
@@ -74,7 +70,7 @@ namespace CubeServer.Model
                     return false;
                 }
 
-                if (activeOctants != 0)
+                if (this.activeOctants != 0)
                 {
                     for (int a = 0; a < 8; a++)
                     {
@@ -94,6 +90,11 @@ namespace CubeServer.Model
             get { return this.parent == null; }
         }
 
+        public int MinimumSize
+        {
+            get { return this.minimumSize; }
+        }
+
         public IList<TObject> Objects
         {
             get { return this.objects; }
@@ -104,6 +105,11 @@ namespace CubeServer.Model
             get { return this.octants; }
         }
 
+        public byte OctantMask
+        {
+            get { return this.activeOctants; }
+        }
+
         public BoundingBox Region
         {
             get { return this.region; }
@@ -111,7 +117,11 @@ namespace CubeServer.Model
 
         public override string ToString()
         {
-            return String.Format("Region:{0} Children:{1}b Objects:{2}", this.Region, Convert.ToString(this.activeOctants, 2).PadLeft(8, '0'), this.objects.Count);
+            return String.Format(
+                "Region:{0} Children:{1}b Objects:{2}",
+                this.Region,
+                Convert.ToString(this.activeOctants, 2).PadLeft(8, '0'),
+                this.objects.Count);
         }
 
         public void Add(IEnumerable<TObject> items)
@@ -158,6 +168,15 @@ namespace CubeServer.Model
             return this.GetIntersection(box);
         }
 
+        public IEnumerable<Intersection<TObject>> AllIntersections(BoundingSphere sphere)
+        {
+            if (!this.treeReady)
+            {
+                this.UpdateTree();
+            }
+
+            return this.GetIntersection(sphere);
+        }
 
         public Intersection<TObject> NearestIntersection(Ray ray)
         {
@@ -325,8 +344,6 @@ namespace CubeServer.Model
             return ret;
         }
 
-        private static IEnumerable<Intersection<TObject>> NoIntersections = new Intersection<TObject>[] { };
-
         private IEnumerable<Intersection<TObject>> GetIntersection(BoundingBox box)
         {
             if (this.objects.Count == 0 && this.HasChildren == false)
@@ -346,7 +363,6 @@ namespace CubeServer.Model
                 }
             }
 
-            // test each object in the list for intersection
             for (int a = 0; a < 8; a++)
             {
                 if (this.octants[a] == null)
@@ -354,14 +370,16 @@ namespace CubeServer.Model
                     continue;
                 }
 
-                var octantRegion = this.octants[a].region;
+                BoundingBox octantRegion = this.octants[a].region;
+                ContainmentType boxContains = box.Contains(octantRegion);
 
-                if((box.Contains(octantRegion) == ContainmentType.Intersects || box.Contains(octantRegion) == ContainmentType.Contains))
+                if ((boxContains == ContainmentType.Intersects || boxContains == ContainmentType.Contains))
                 {
                     IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(box);
                     ret.AddRange(hitList);
                 }
             }
+
             return ret;
         }
 
@@ -376,7 +394,6 @@ namespace CubeServer.Model
 
             foreach (TObject obj in this.objects)
             {
-                // test for intersection
                 Intersection<TObject> ir = obj.Intersects(frustum);
                 if (ir != null)
                 {
@@ -384,17 +401,61 @@ namespace CubeServer.Model
                 }
             }
 
-            // test each object in the list for intersection
             for (int a = 0; a < 8; a++)
             {
-                if (this.octants[a] != null &&
-                    (frustum.Contains(this.octants[a].region) == ContainmentType.Intersects ||
-                     frustum.Contains(this.octants[a].region) == ContainmentType.Contains))
+                if (this.octants[a] == null)
+                {
+                    continue;
+                }
+
+                BoundingBox octantRegion = this.octants[a].region;
+                ContainmentType frustumContains = frustum.Contains(octantRegion);
+
+                if ((frustumContains == ContainmentType.Intersects || frustumContains == ContainmentType.Contains))
                 {
                     IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(frustum);
                     ret.AddRange(hitList);
                 }
             }
+            return ret;
+        }
+
+        private IEnumerable<Intersection<TObject>> GetIntersection(BoundingSphere sphere)
+        {
+            if (this.objects.Count == 0 && this.HasChildren == false)
+            {
+                return NoIntersections;
+            }
+
+            List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
+
+            foreach (TObject obj in this.objects)
+            {
+                Trace.WriteLine(obj.ToString());
+                Intersection<TObject> ir = obj.Intersects(sphere);
+                if (ir != null)
+                {
+                    ret.Add(ir);
+                }
+            }
+
+            for (int a = 0; a < 8; a++)
+            {
+                if (this.octants[a] == null)
+                {
+                    continue;
+                }
+
+                BoundingBox octantRegion = this.octants[a].region;
+                ContainmentType sphereContains = sphere.Contains(octantRegion);
+
+                if ((sphereContains == ContainmentType.Intersects || sphereContains == ContainmentType.Contains))
+                {
+                    IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(sphere);
+                    ret.AddRange(hitList);
+                }
+            }
+
             return ret;
         }
 
@@ -542,7 +603,7 @@ namespace CubeServer.Model
         private int NextPowerTwo(int v)
         {
             // first round down to one less than a power of 2
-            v |= v >> 1;  
+            v |= v >> 1;
             v |= v >> 2;
             v |= v >> 4;
             v |= v >> 8;
