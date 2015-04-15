@@ -35,7 +35,10 @@ namespace CubeServer.Model
         public Vector2 TextureSetSize { get; set; }
         public Uri TextureTemplate { get; set; }
 
+        // TODO: Rename this model bounds
         public BoundingBox WorldBounds { get; set; }
+
+        // TODO: Rename this to WorldBounds, and fix up all callers
         public BoundingBox VirtualWorldBounds
         {
             get { return this.virtualWorldBounds; }

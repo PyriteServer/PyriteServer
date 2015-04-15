@@ -26,6 +26,6 @@ namespace CubeServer.Contracts
 
         IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox);
 
-        IEnumerable<int[]> Query(string setId, string versionId, string detailProfile, BoundingSphere worldBox);
+        IEnumerable<QueryDetailContract> Query(string setId, string versionId, string detailProfile, BoundingSphere worldBox);
     }
 }

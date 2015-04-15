@@ -76,32 +76,6 @@ namespace CubeServer.DataAccess
             GC.SuppressFinalize(this);
         }
 
-        public IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox)
-        {
-            LoaderResults setData = this.loadedSetData.Get();
-            if (setData == null)
-            {
-                throw new NotFoundException("setData");
-            }
-
-            SetVersion setVersion = setData.FindSetVersion(setId, versionId);
-
-            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name == detail);
-            if (lod == null)
-            {
-                throw new NotFoundException("detailLevel");
-            }
-
-            var cubeBox = lod.ToCubeCoordinates(worldBox);
-            var intersections = lod.Cubes.AllIntersections(cubeBox);
-
-            foreach (var intersection in intersections)
-            {
-                var min = intersection.Object.BoundingBox.Min;
-                yield return new []{(int)min.X, (int)min.Y, (int)min.Z};
-            }
-        }
-
         public IEnumerable<VersionResultContract> EnumerateSetVersions(string setId)
         {
             LoaderResults setData = this.loadedSetData.Get();
@@ -165,7 +139,7 @@ namespace CubeServer.DataAccess
             {
                 modelFormat = ModelFormats.Ebo;
             }
-            else if(!ModelFormats.TryParse(format, true, out modelFormat))
+            else if (!ModelFormats.TryParse(format, true, out modelFormat))
             {
                 throw new NotFoundException("format");
             }
@@ -174,15 +148,6 @@ namespace CubeServer.DataAccess
             modelPath = ExpandCoordinatePlaceholders(modelPath, xpos, ypos, zpos, modelFormat);
 
             return this.GetStorageStreamForPath(modelPath);
-        }
-
-        private static string ExpandCoordinatePlaceholders(string modelPath, object xpos, object ypos, object zpos, ModelFormats format)
-        {
-            modelPath = modelPath.Replace(X_PLACEHOLDER, xpos.ToString());
-            modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos.ToString());
-            modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos.ToString());
-            modelPath = modelPath.Replace(FORMAT_PLACEHOLDER, format.ToString().ToLower());
-            return modelPath;
         }
 
         public SetVersionResultContract GetSetVersion(string setId, string versionId)
@@ -280,13 +245,7 @@ namespace CubeServer.DataAccess
 
                         Uri material = new Uri(setMetadataUri, setMetadata.Mtl);
 
-                        SetVersion currentSet = new SetVersion
-                                                {
-                                                    SourceUri = setMetadataUri,
-                                                    Name = set.Name,
-                                                    Version = version.Name,
-                                                    Material = material
-                                                };
+                        SetVersion currentSet = new SetVersion { SourceUri = setMetadataUri, Name = set.Name, Version = version.Name, Material = material };
 
                         List<SetVersionLevelOfDetail> detailLevels = await this.ExtractDetailLevels(setMetadata, setMetadataUri);
 
@@ -308,56 +267,76 @@ namespace CubeServer.DataAccess
             return results;
         }
 
-        private async Task<List<SetVersionLevelOfDetail>> ExtractDetailLevels(SetMetadataContract setMetadata, Uri baseUrl)
+        public IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox)
         {
-            List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
-            foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
+            LoaderResults setData = this.loadedSetData.Get();
+            if (setData == null)
             {
-
-                Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
-                CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
-
-                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
-                octree.UpdateTree();
-
-                Vector3 cubeBounds = cubeMetadata.SetSize;
-
-                ExtentsContract worldBounds = cubeMetadata.WorldBounds;
-                ExtentsContract virtualWorldBounds = cubeMetadata.VirtualWorldBounds;
-
-                SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
-                currentSetLevelOfDetail.Metadata = lodMetadataUri;
-                currentSetLevelOfDetail.Number = detailLevel;
-                currentSetLevelOfDetail.Cubes = octree;
-                currentSetLevelOfDetail.WorldBounds = new BoundingBox(
-                    new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
-                    new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
-
-                if (virtualWorldBounds != null)
-                {
-                    currentSetLevelOfDetail.VirtualWorldBounds = new BoundingBox(
-                        new Vector3(virtualWorldBounds.XMin, virtualWorldBounds.YMin, virtualWorldBounds.ZMin),
-                        new Vector3(virtualWorldBounds.XMax, virtualWorldBounds.YMax, virtualWorldBounds.ZMax));
-                }
-                else
-                {
-                    currentSetLevelOfDetail.VirtualWorldBounds = new BoundingBox(
-                        new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
-                        new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
-                }
-
-                currentSetLevelOfDetail.SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z);
-                currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
-                currentSetLevelOfDetail.VertexCount = cubeMetadata.VertexCount;
-
-                currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
-                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri,"{x}_{y}_{z}.{format}");
-
-                currentSetLevelOfDetail.TextureSetSize = cubeMetadata.TextureSetSize;
-
-                detailLevels.Add(currentSetLevelOfDetail);
+                throw new NotFoundException("setData");
             }
-            return detailLevels;
+
+            SetVersion setVersion = setData.FindSetVersion(setId, versionId);
+
+            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name == detail);
+            if (lod == null)
+            {
+                throw new NotFoundException("detailLevel");
+            }
+
+            BoundingBox cubeBox = lod.ToCubeCoordinates(worldBox);
+            IEnumerable<Intersection<CubeBounds>> intersections = lod.Cubes.AllIntersections(cubeBox);
+
+            foreach (Intersection<CubeBounds> intersection in intersections)
+            {
+                Vector3 min = intersection.Object.BoundingBox.Min;
+                yield return new[] { (int)min.X, (int)min.Y, (int)min.Z };
+            }
+        }
+
+        public IEnumerable<QueryDetailContract> Query(string setId, string versionId, string profile, BoundingSphere worldSphere)
+        {
+            ProfileLevel[] profiles = ParseProfile(profile).ToArray();
+            SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, versionId);
+
+            // TODO: Move this dictionary into SetVersion
+            Dictionary<string, SetVersionLevelOfDetail> detailLevels = setVersion.DetailLevels.ToDictionary(
+                lod => lod.Name,
+                lod => lod,
+                StringComparer.OrdinalIgnoreCase);
+            int sumProportions = profiles.Sum(p => p.Proportion);
+
+            float radiusProportionRatio = worldSphere.Radius / sumProportions;
+
+            int runningTotal = 0;
+
+            var queries =
+                profiles.Select(p => new { p.Level, Radius = runningTotal += p.Proportion })
+                    .Select(p => new { p.Level, Radius = p.Radius * radiusProportionRatio });
+
+            foreach (var query in queries)
+            {
+                SetVersionLevelOfDetail detailLevel;
+
+                if (!detailLevels.TryGetValue(query.Level, out detailLevel))
+                {
+                    throw new NotFoundException("detail level");
+                }
+
+                Vector3 cubeCenter = detailLevel.ToCubeCoordinates(worldSphere.Center);
+
+                // TODO: Spheres in World Space aren't spheres in cube space, so this factor distorts the query if 
+                // there is variation in scaling factor for different dimensions e.g. 3,2,1
+                float cubeRadius = detailLevel.ToCubeCoordinates(new Vector3(worldSphere.Radius, 0, 0)).X;
+
+                IEnumerable<Intersection<CubeBounds>> queryResults = detailLevel.Cubes.AllIntersections(new BoundingSphere(cubeCenter, cubeRadius));
+
+                yield return
+                    new QueryDetailContract
+                    {
+                        Name = detailLevel.Name,
+                        Cubes = queryResults.Select(i => i.Object.BoundingBox.Min).Select(v => new[] { (int)v.X, (int)v.Y, (int)v.Z })
+                    };
+            }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -407,6 +386,35 @@ namespace CubeServer.DataAccess
             return sourceUri;
         }
 
+        private static string ExpandCoordinatePlaceholders(string modelPath, object xpos, object ypos, object zpos, ModelFormats format)
+        {
+            modelPath = modelPath.Replace(X_PLACEHOLDER, xpos.ToString());
+            modelPath = modelPath.Replace(Y_PLACEHOLDER, ypos.ToString());
+            modelPath = modelPath.Replace(Z_PLACEHOLDER, zpos.ToString());
+            modelPath = modelPath.Replace(FORMAT_PLACEHOLDER, format.ToString().ToLower());
+            return modelPath;
+        }
+
+        private static IEnumerable<ProfileLevel> ParseProfile(string profileString)
+        {
+            foreach (string level in profileString.Split(ProfileLevel.LevelDelimiter, StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] levelSplit = level.Split(ProfileLevel.ProportionDelimiter);
+                if (levelSplit.Length != 2)
+                {
+                    continue;
+                }
+
+                int proportion;
+                if (!int.TryParse(levelSplit[1], out proportion))
+                {
+                    continue;
+                }
+
+                yield return new ProfileLevel { Level = levelSplit[0], Proportion = proportion };
+            }
+        }
+
         private T DeserializeStream<T>(Stream stream)
         {
             using (StreamReader sr = new StreamReader(stream))
@@ -414,6 +422,58 @@ namespace CubeServer.DataAccess
             {
                 return new JsonSerializer().Deserialize<T>(jr);
             }
+        }
+
+        private async Task<List<SetVersionLevelOfDetail>> ExtractDetailLevels(SetMetadataContract setMetadata, Uri baseUrl)
+        {
+            List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
+            foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
+            {
+                Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
+                CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
+
+                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
+                octree.UpdateTree();
+
+                Vector3 cubeBounds = cubeMetadata.SetSize;
+
+                ExtentsContract worldBounds = cubeMetadata.WorldBounds;
+                ExtentsContract virtualWorldBounds = cubeMetadata.VirtualWorldBounds;
+
+                SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
+                currentSetLevelOfDetail.Metadata = lodMetadataUri;
+                currentSetLevelOfDetail.Number = detailLevel;
+                currentSetLevelOfDetail.Cubes = octree;
+                currentSetLevelOfDetail.WorldBounds = new BoundingBox(
+                    new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
+                    new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+
+                if (virtualWorldBounds != null)
+                {
+                    currentSetLevelOfDetail.VirtualWorldBounds =
+                        new BoundingBox(
+                            new Vector3(virtualWorldBounds.XMin, virtualWorldBounds.YMin, virtualWorldBounds.ZMin),
+                            new Vector3(virtualWorldBounds.XMax, virtualWorldBounds.YMax, virtualWorldBounds.ZMax));
+                }
+                else
+                {
+                    currentSetLevelOfDetail.VirtualWorldBounds = new BoundingBox(
+                        new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
+                        new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+                }
+
+                currentSetLevelOfDetail.SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z);
+                currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
+                currentSetLevelOfDetail.VertexCount = cubeMetadata.VertexCount;
+
+                currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
+                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri, "{x}_{y}_{z}.{format}");
+
+                currentSetLevelOfDetail.TextureSetSize = cubeMetadata.TextureSetSize;
+
+                detailLevels.Add(currentSetLevelOfDetail);
+            }
+            return detailLevels;
         }
 
         private Dictionary<string, SetVersion> GenerateVersionMap(IGrouping<string, SetVersion> setVersions)
@@ -462,6 +522,14 @@ namespace CubeServer.DataAccess
                     Thread.Sleep(pollingPeriod);
                 }
             }
+        }
+
+        private struct ProfileLevel
+        {
+            internal static char[] LevelDelimiter = new char[] { ',' };
+            internal static char[] ProportionDelimiter = new char[] { '=' };
+            internal string Level;
+            internal int Proportion;
         }
 
         private class RevolvingState<T> : IDisposable
@@ -544,31 +612,6 @@ namespace CubeServer.DataAccess
                     this.stateLock.ExitWriteLock();
                 }
             }
-        }
-
-
-        public IEnumerable<int[]> Query(string setId, string versionId, string profile, BoundingSphere worldBox)
-        {
-            throw new NotImplementedException();
-        }
-
-        private IEnumerable<ProfileLevel> ParseProfile(string profileString)
-        {
-            foreach (string level in profileString.Split(ProfileLevel.LevelDelimiter, StringSplitOptions.RemoveEmptyEntries))
-            {
-                var levelSplit = level.Split(ProfileLevel.ProportionDelimiter);
-
-                yield return new ProfileLevel();
-            }
-        }
-
-        internal struct ProfileLevel
-        {
-            internal string Level;
-            internal int Proportion;
-
-            internal static char[] LevelDelimiter = new char[]{'|'};
-            internal static char[] ProportionDelimiter = new char[] { ':' };
         }
     }
 }
