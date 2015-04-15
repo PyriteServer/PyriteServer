@@ -12,7 +12,7 @@ namespace CubeServer.Model
     public class SetVersionLevelOfDetail
     {
         private Vector3 setSize = Vector3.One;
-        private BoundingBox worldBounds = new BoundingBox();
+        private BoundingBox virtualWorldBounds = new BoundingBox();
         private Vector3 worldToCubeRatio = Vector3.One;
 
         public OcTree<CubeBounds> Cubes { get; set; }
@@ -20,6 +20,7 @@ namespace CubeServer.Model
         public Uri ModelTemplate { get; set; }
         public string Name { get; set; }
         public int Number { get; set; }
+        public int VertexCount { get; set; }
 
         public Vector3 SetSize
         {
@@ -34,12 +35,13 @@ namespace CubeServer.Model
         public Vector2 TextureSetSize { get; set; }
         public Uri TextureTemplate { get; set; }
 
-        public BoundingBox WorldBounds
+        public BoundingBox WorldBounds { get; set; }
+        public BoundingBox VirtualWorldBounds
         {
-            get { return this.worldBounds; }
+            get { return this.virtualWorldBounds; }
             set
             {
-                this.worldBounds = value;
+                this.virtualWorldBounds = value;
                 this.UpdateScale();
             }
         }
@@ -51,16 +53,16 @@ namespace CubeServer.Model
 
         public Vector3 ToCubeCoordinates(Vector3 worldCoordinates)
         {
-            Vector3 zeroBaseWorld = worldCoordinates - this.worldBounds.Min;
+            Vector3 zeroBaseWorld = worldCoordinates - this.virtualWorldBounds.Min;
             return zeroBaseWorld / this.worldToCubeRatio;
         }
 
         public BoundingBox ToCubeCoordinates(BoundingBox worldCoordinates)
         {
-            Vector3 min = worldCoordinates.Min - this.worldBounds.Min;
+            Vector3 min = worldCoordinates.Min - this.virtualWorldBounds.Min;
             min /= this.worldToCubeRatio;
 
-            Vector3 max = worldCoordinates.Max - this.worldBounds.Min;
+            Vector3 max = worldCoordinates.Max - this.virtualWorldBounds.Min;
             max /= this.worldToCubeRatio;
 
             return new BoundingBox(min, max);
@@ -69,16 +71,16 @@ namespace CubeServer.Model
         public Vector3 ToWorldCoordinates(Vector3 cubeCoordinates)
         {
             Vector3 scaleCubeToWorld = this.worldToCubeRatio * cubeCoordinates;
-            return scaleCubeToWorld + this.worldBounds.Min;
+            return scaleCubeToWorld + this.virtualWorldBounds.Min;
         }
 
         public BoundingBox ToWorldCoordinates(BoundingBox cubeCoordinates)
         {
             Vector3 min = this.worldToCubeRatio * cubeCoordinates.Min;
-            min += this.worldBounds.Min;
+            min += this.virtualWorldBounds.Min;
 
             Vector3 max = this.worldToCubeRatio * cubeCoordinates.Max;
-            max += this.worldBounds.Max;
+            max += this.virtualWorldBounds.Max;
 
             return new BoundingBox(min, max);
         }
@@ -91,7 +93,7 @@ namespace CubeServer.Model
                 return;
             }
 
-            BoundingBox value = this.worldBounds;
+            BoundingBox value = this.virtualWorldBounds;
             this.worldToCubeRatio = (value.Max - value.Min) / this.SetSize;
         }
     }
