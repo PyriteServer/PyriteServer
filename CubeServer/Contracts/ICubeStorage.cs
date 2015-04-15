@@ -27,5 +27,12 @@ namespace CubeServer.Contracts
         IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox);
 
         IEnumerable<QueryDetailContract> Query(string setId, string versionId, string detailProfile, BoundingSphere worldBox);
+
+        /// <summary>3x3 cube query at all detail levels</summary>
+        /// <param name="setId"></param>
+        /// <param name="versionId"></param>
+        /// <param name="worldCenter"></param>
+        /// <returns></returns>
+        IEnumerable<QueryDetailContract> Query(string setId, string versionId, Vector3 worldCenter);
     }
 }

@@ -53,5 +53,24 @@ namespace CubeServer.Controllers
                 return this.NotFound();
             }
         }
+
+        [HttpGet]
+        [Route("sets/{setid}/{versionId}/query/3x3/{ax},{ay},{az}")]
+        public IHttpActionResult BoundingBoxSphere(string setId, string versionId, float ax, float ay, float az)
+        {
+            try
+            {
+                IEnumerable<QueryDetailContract> result = Dependency.Storage.Query(
+                    setId,
+                    versionId,
+                    new Vector3(ax, ay, az));
+                return this.Ok(ResultWrapper.OkResult(result));
+            }
+            catch (NotFoundException ex)
+            {
+                Trace.WriteLine(ex, "QueryController::Get");
+                return this.NotFound();
+            }
+        }
     }
 }

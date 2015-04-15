@@ -339,6 +339,27 @@ namespace CubeServer.DataAccess
             }
         }
 
+        public IEnumerable<QueryDetailContract> Query(string setId, string versionId, Vector3 worldCenter)
+        {
+            SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, versionId);
+
+            foreach (var lod in setVersion.DetailLevels)
+            {
+                Vector3 cubeCenter = lod.ToCubeCoordinates(worldCenter);
+                Vector3 flooredCube = new Vector3((int)cubeCenter.X, (int)cubeCenter.Y,(int)cubeCenter.Z);
+                BoundingBox rubiksCube = new BoundingBox(flooredCube - Vector3.One, flooredCube + Vector3.One);
+
+                IEnumerable<Intersection<CubeBounds>> queryResults = lod.Cubes.AllIntersections(rubiksCube);
+
+                yield return
+                    new QueryDetailContract
+                    {
+                        Name = lod.Name,
+                        Cubes = queryResults.Select(i => i.Object.BoundingBox.Min).Select(v => new[] { (int)v.X, (int)v.Y, (int)v.Z })
+                    };
+            }
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing || this.disposed)
