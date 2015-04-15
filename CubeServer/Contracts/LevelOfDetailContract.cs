@@ -24,5 +24,8 @@ namespace CubeServer.Contracts
 
         [JsonProperty("worldCubeScale")]
         public Vector3Contract WorldCubeScaling { get; set; }
+
+        [JsonProperty("vertexCount")]
+        public int VertexCount { get; set; }
     }
 }

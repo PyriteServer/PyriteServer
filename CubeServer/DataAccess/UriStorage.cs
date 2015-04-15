@@ -208,7 +208,8 @@ namespace CubeServer.DataAccess
                             SetSize = new Vector3Contract(l.SetSize),
                             WorldBounds = new BoundingBoxContract(l.WorldBounds),
                             TextureSetSize = new Vector2Contract(l.TextureSetSize),
-                            WorldCubeScaling = new Vector3Contract(l.WorldToCubeRatio)
+                            WorldCubeScaling = new Vector3Contract(l.WorldToCubeRatio),
+                            VertexCount = l.VertexCount
                         }).ToArray();
 
             return result;
@@ -322,6 +323,7 @@ namespace CubeServer.DataAccess
                 Vector3 cubeBounds = cubeMetadata.SetSize;
 
                 ExtentsContract worldBounds = cubeMetadata.WorldBounds;
+                ExtentsContract virtualWorldBounds = cubeMetadata.VirtualWorldBounds;
 
                 SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
                 currentSetLevelOfDetail.Metadata = lodMetadataUri;
@@ -330,8 +332,23 @@ namespace CubeServer.DataAccess
                 currentSetLevelOfDetail.WorldBounds = new BoundingBox(
                     new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
                     new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+
+                if (virtualWorldBounds != null)
+                {
+                    currentSetLevelOfDetail.VirtualWorldBounds = new BoundingBox(
+                        new Vector3(virtualWorldBounds.XMin, virtualWorldBounds.YMin, virtualWorldBounds.ZMin),
+                        new Vector3(virtualWorldBounds.XMax, virtualWorldBounds.YMax, virtualWorldBounds.ZMax));
+                }
+                else
+                {
+                    currentSetLevelOfDetail.VirtualWorldBounds = new BoundingBox(
+                        new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
+                        new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+                }
+
                 currentSetLevelOfDetail.SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z);
                 currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
+                currentSetLevelOfDetail.VertexCount = cubeMetadata.VertexCount;
 
                 currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
                 currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri,"{x}_{y}_{z}.{format}");

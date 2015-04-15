@@ -14,8 +14,12 @@ namespace CubeServer.DataAccess.Json
 
         public ExtentsContract WorldBounds { get; set; }
 
+        public ExtentsContract VirtualWorldBounds { get; set; }
+
         public Vector3 SetSize { get; set; }
 
         public Vector2 TextureSetSize { get; set; }
+
+        public int VertexCount { get; set; }
     }
 }
