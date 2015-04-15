@@ -116,6 +116,7 @@
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ISecretsProvider.cs" />
     <Compile Include="Contracts\LevelOfDetailContract.cs" />
+    <Compile Include="Contracts\QueryDetailContract.cs" />
     <Compile Include="Contracts\QueryResultContract.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
     <Compile Include="Contracts\SetVersionResultContract.cs" />
@@ -173,6 +174,7 @@
   <ItemGroup>
     <Content Include="Data\accountkey.txt" />
     <Content Include="default.html" />
+    <Content Include="explorer.html" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

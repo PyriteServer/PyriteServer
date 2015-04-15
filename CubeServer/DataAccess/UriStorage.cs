@@ -528,5 +528,30 @@ namespace CubeServer.DataAccess
                 }
             }
         }
+
+
+        public IEnumerable<int[]> Query(string setId, string versionId, string profile, BoundingSphere worldBox)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IEnumerable<ProfileLevel> ParseProfile(string profileString)
+        {
+            foreach (string level in profileString.Split(ProfileLevel.LevelDelimiter, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var levelSplit = level.Split(ProfileLevel.ProportionDelimiter);
+
+                yield return new ProfileLevel();
+            }
+        }
+
+        internal struct ProfileLevel
+        {
+            internal string Level;
+            internal int Proportion;
+
+            internal static char[] LevelDelimiter = new char[]{'|'};
+            internal static char[] ProportionDelimiter = new char[] { ':' };
+        }
     }
 }

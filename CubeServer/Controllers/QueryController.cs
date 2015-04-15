@@ -34,6 +34,26 @@ namespace CubeServer.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("sets/{setid}/{versionId}/query/{profile}/{ax},{ay},{az}/{radius}/")]
+        public IHttpActionResult BoundingBoxSphere(string setId, string versionId, string profile, float ax, float ay, float az, float radius)
+        {
+            try
+            {
+                IEnumerable<int[]> result = Dependency.Storage.Query(
+                    setId,
+                    versionId,
+                    profile,
+                    new BoundingSphere(new Vector3(ax, ay, az), radius));
+                return this.Ok(ResultWrapper.OkResult(result));
+            }
+            catch (NotFoundException ex)
+            {
+                Trace.WriteLine(ex, "QueryController::Get");
+                return this.NotFound();
+            }
+        }
+
         //[HttpGet]
         //[Route("sets/{setid}/{version}/query/{detail}/{cx:float}|{cy:float}|{cz:float},{px1:float}|{py1:float}|{pz1:float},{px2:float}|{py2:float}|{pz2:float}")]
         //public IEnumerable<object> Get(string setid, string version, string detail, float cx, float cy, float cz, float px1, float py1, float pz1, float px2, float py2, float pz2)

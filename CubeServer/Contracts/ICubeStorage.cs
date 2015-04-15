@@ -25,5 +25,7 @@ namespace CubeServer.Contracts
         Task<StorageStream> GetModelStream(string setId, string version, string detail, string xpos, string ypos, string zpos, string format);
 
         IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox);
+
+        IEnumerable<int[]> Query(string setId, string versionId, string detailProfile, BoundingSphere worldBox);
     }
 }
