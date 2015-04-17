@@ -7,6 +7,9 @@
 namespace CubeServer.Model
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using CubeServer.Contracts;
     using Microsoft.Xna.Framework;
 
     public class SetVersionLevelOfDetail
@@ -20,7 +23,6 @@ namespace CubeServer.Model
         public Uri ModelTemplate { get; set; }
         public string Name { get; set; }
         public int Number { get; set; }
-        public int VertexCount { get; set; }
 
         public Vector3 SetSize
         {
@@ -34,9 +36,9 @@ namespace CubeServer.Model
 
         public Vector2 TextureSetSize { get; set; }
         public Uri TextureTemplate { get; set; }
+        public int VertexCount { get; set; }
 
         // TODO: Rename this model bounds
-        public BoundingBox WorldBounds { get; set; }
 
         // TODO: Rename this to WorldBounds, and fix up all callers
         public BoundingBox VirtualWorldBounds
@@ -49,9 +51,57 @@ namespace CubeServer.Model
             }
         }
 
+        public BoundingBox WorldBounds { get; set; }
+
         public Vector3 WorldToCubeRatio
         {
             get { return this.worldToCubeRatio; }
+        }
+
+        public QueryDetailContract Query(Vector3 worldCenter)
+        {
+            Vector3 cubeCenter = this.ToCubeCoordinates(worldCenter);
+            Vector3 flooredCube = new Vector3((int)cubeCenter.X, (int)cubeCenter.Y, (int)cubeCenter.Z);
+
+            // all vertices and edges of the "inner" cube touch one or more points on all outer cubes.
+            BoundingBox rubiksCube = new BoundingBox(flooredCube, flooredCube + Vector3.One);
+
+            IEnumerable<Intersection<CubeBounds>> queryResults = this.Cubes.AllIntersections(rubiksCube);
+
+            return new QueryDetailContract
+                   {
+                       Name = this.Name,
+                       Cubes = queryResults.Select(i => i.Object.BoundingBox.Min).Select(v => new[] { (int)v.X, (int)v.Y, (int)v.Z })
+                   };
+        }
+
+        public QueryDetailContract Query(BoundingSphere worldSphere)
+        {
+            Vector3 cubeCenter = this.ToCubeCoordinates(worldSphere.Center);
+
+            // TODO: Spheres in World Space aren't spheres in cube space, so this factor distorts the query if 
+            // there is variation in scaling factor for different dimensions e.g. 3,2,1
+            float cubeRadius = this.ToCubeCoordinates(new Vector3(worldSphere.Radius, 0, 0)).X;
+
+            IEnumerable<Intersection<CubeBounds>> queryResults = this.Cubes.AllIntersections(new BoundingSphere(cubeCenter, cubeRadius));
+
+            return new QueryDetailContract
+                   {
+                       Name = this.Name,
+                       Cubes = queryResults.Select(i => i.Object.BoundingBox.Min).Select(v => new[] { (int)v.X, (int)v.Y, (int)v.Z })
+                   };
+        }
+
+        public IEnumerable<int[]> Query(BoundingBox worldBox)
+        {
+            BoundingBox cubeBox = this.ToCubeCoordinates(worldBox);
+            IEnumerable<Intersection<CubeBounds>> intersections = this.Cubes.AllIntersections(cubeBox);
+
+            foreach (Intersection<CubeBounds> intersection in intersections)
+            {
+                Vector3 min = intersection.Object.BoundingBox.Min;
+                yield return new[] { (int)min.X, (int)min.Y, (int)min.Z };
+            }
         }
 
         public Vector3 ToCubeCoordinates(Vector3 worldCoordinates)

@@ -7,7 +7,6 @@
 namespace CubeServerTest
 {
     using System.IO;
-    using CubeServer;
     using CubeServer.DataAccess;
     using CubeServer.Model;
     using Microsoft.VisualStudio.TestTools.UnitTesting;

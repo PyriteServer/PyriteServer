@@ -23,21 +23,7 @@ namespace CubeServer.Model
 
         public IEnumerable<QueryDetailContract> Query(Vector3 worldCenter)
         {
-            foreach (SetVersionLevelOfDetail lod in this.DetailLevels)
-            {
-                Vector3 cubeCenter = lod.ToCubeCoordinates(worldCenter);
-                Vector3 flooredCube = new Vector3((int)cubeCenter.X, (int)cubeCenter.Y, (int)cubeCenter.Z);
-                BoundingBox rubiksCube = new BoundingBox(flooredCube - Vector3.One, flooredCube + Vector3.One);
-
-                IEnumerable<Intersection<CubeBounds>> queryResults = lod.Cubes.AllIntersections(rubiksCube);
-
-                yield return
-                    new QueryDetailContract
-                    {
-                        Name = lod.Name,
-                        Cubes = queryResults.Select(i => i.Object.BoundingBox.Min).Select(v => new[] { (int)v.X, (int)v.Y, (int)v.Z })
-                    };
-            }
+            return this.DetailLevels.Select(lod => lod.Query(worldCenter));
         }
 
         public IEnumerable<int[]> Query(string detail, BoundingBox worldBox)
@@ -48,14 +34,7 @@ namespace CubeServer.Model
                 throw new NotFoundException("detailLevel");
             }
 
-            BoundingBox cubeBox = lod.ToCubeCoordinates(worldBox);
-            IEnumerable<Intersection<CubeBounds>> intersections = lod.Cubes.AllIntersections(cubeBox);
-
-            foreach (Intersection<CubeBounds> intersection in intersections)
-            {
-                Vector3 min = intersection.Object.BoundingBox.Min;
-                yield return new[] { (int)min.X, (int)min.Y, (int)min.Z };
-            }
+            return lod.Query(worldBox);
         }
 
         public IEnumerable<QueryDetailContract> Query(string profile, BoundingSphere worldSphere)
@@ -70,6 +49,7 @@ namespace CubeServer.Model
             int sumProportions = profiles.Sum(p => p.Proportion);
 
             float radiusProportionRatio = worldSphere.Radius / sumProportions;
+
 
             int runningTotal = 0;
 
@@ -86,20 +66,7 @@ namespace CubeServer.Model
                     throw new NotFoundException("detail level");
                 }
 
-                Vector3 cubeCenter = detailLevel.ToCubeCoordinates(worldSphere.Center);
-
-                // TODO: Spheres in World Space aren't spheres in cube space, so this factor distorts the query if 
-                // there is variation in scaling factor for different dimensions e.g. 3,2,1
-                float cubeRadius = detailLevel.ToCubeCoordinates(new Vector3(worldSphere.Radius, 0, 0)).X;
-
-                IEnumerable<Intersection<CubeBounds>> queryResults = detailLevel.Cubes.AllIntersections(new BoundingSphere(cubeCenter, cubeRadius));
-
-                yield return
-                    new QueryDetailContract
-                    {
-                        Name = detailLevel.Name,
-                        Cubes = queryResults.Select(i => i.Object.BoundingBox.Min).Select(v => new[] { (int)v.X, (int)v.Y, (int)v.Z })
-                    };
+                yield return detailLevel.Query(worldSphere);
             }
         }
 
