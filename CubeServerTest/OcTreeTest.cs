@@ -143,6 +143,35 @@ namespace CubeServerTest
         }
 
         [TestMethod]
+        public void  ItemsTest()
+        {
+            List<CubeBounds> testBounds = new List<CubeBounds>();
+
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(Vector3.Zero, 1) });
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(new Vector3(1, 1, 1), 1) });
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(new Vector3(2, 2, 2), 1) });
+            testBounds.Add(new CubeBounds { BoundingBox = this.MakeCube(new Vector3(3, 3, 3), 1) });
+
+            OcTree<CubeBounds> testOcTree = new OcTree<CubeBounds>(this.zeroBoundingBox, testBounds);
+            testOcTree.UpdateTree();
+            OcTreeUtilities.Dump(testOcTree);
+
+            Assert.IsTrue(testOcTree.HasChildren);
+            Assert.IsTrue(testOcTree.IsRoot);
+            Assert.IsNotNull(testOcTree.Region);
+
+            var allItems = testOcTree.Items();
+            Assert.AreEqual(4, allItems.Count());
+
+            var octants = testOcTree.Octant.Where(o => o != null);
+            foreach (var octant in octants)
+            {
+                var childItems = octant.Items();
+                Assert.AreEqual(2, childItems.Count());
+            }
+        }
+
+        [TestMethod]
         public void RayIntersectionTest()
         {
             List<CubeBounds> testBounds = new List<CubeBounds>();

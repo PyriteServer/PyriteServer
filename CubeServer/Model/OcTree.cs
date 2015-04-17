@@ -206,6 +206,32 @@ namespace CubeServer.Model
             return nearest;
         }
 
+        public IEnumerable<TObject> Items()
+        {
+            foreach (TObject obj in this.objects)
+            {
+                yield return obj;
+            }
+
+            if (this.activeOctants == 0)
+            {
+                yield break;
+            }
+
+            for (int index = 0; index < 8; index++)
+            {
+                if (this.octants[index] == null)
+                {
+                    continue;
+                }
+
+                foreach (TObject obj in this.octants[index].Items())
+                {
+                    yield return obj;
+                }
+            }
+        }
+
         public void Remove(TObject item)
         {
             this.objects.Remove(item);
