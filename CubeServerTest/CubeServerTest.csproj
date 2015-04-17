@@ -55,6 +55,7 @@
     <Compile Include="OcTreeTest.cs" />
     <Compile Include="OcTreeUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryTest.cs" />
     <Compile Include="SetVersionLevelOfDetailTests.cs" />
     <Compile Include="UriStorageTest.cs" />
   </ItemGroup>
