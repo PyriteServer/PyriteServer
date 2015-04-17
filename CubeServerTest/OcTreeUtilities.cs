@@ -28,7 +28,7 @@
                 Trace.IndentLevel = indent;
                 Trace.WriteLine(nextOcTree.ToString());
 
-                foreach (CubeBounds obj in nextOcTree.Objects)
+                foreach (CubeBounds obj in nextOcTree.Items)
                 {
                     objectCount++;
                     Trace.WriteLine(" " + obj.ToString());
@@ -47,7 +47,7 @@
                     {
                         if (((active >> bit) & 0x01) == 0x01)
                         {
-                            OcTree<CubeBounds> childNode = nextOcTree.Octant[bit];
+                            OcTree<CubeBounds> childNode = nextOcTree.Octants[bit];
                             if (childNode != null)
                             {
                                 enumeration.Enqueue(new Tuple<OcTree<CubeBounds>, int>(childNode, nextIndent));

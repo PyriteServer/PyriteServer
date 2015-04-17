@@ -90,24 +90,24 @@ namespace CubeServer.Model
             get { return this.parent == null; }
         }
 
+        public IList<TObject> Items
+        {
+            get { return this.objects; }
+        }
+
         public int MinimumSize
         {
             get { return this.minimumSize; }
         }
 
-        public IList<TObject> Objects
-        {
-            get { return this.objects; }
-        }
-
-        public OcTree<TObject>[] Octant
-        {
-            get { return this.octants; }
-        }
-
         public byte OctantMask
         {
             get { return this.activeOctants; }
+        }
+
+        public OcTree<TObject>[] Octants
+        {
+            get { return this.octants; }
         }
 
         public BoundingBox Region
@@ -178,6 +178,32 @@ namespace CubeServer.Model
             return this.GetIntersection(sphere);
         }
 
+        public IEnumerable<TObject> AllItems()
+        {
+            foreach (TObject obj in this.objects)
+            {
+                yield return obj;
+            }
+
+            if (this.activeOctants == 0)
+            {
+                yield break;
+            }
+
+            for (int index = 0; index < 8; index++)
+            {
+                if (this.octants[index] == null)
+                {
+                    continue;
+                }
+
+                foreach (TObject obj in this.octants[index].AllItems())
+                {
+                    yield return obj;
+                }
+            }
+        }
+
         public Intersection<TObject> NearestIntersection(Ray ray)
         {
             if (!this.treeReady)
@@ -204,32 +230,6 @@ namespace CubeServer.Model
             }
 
             return nearest;
-        }
-
-        public IEnumerable<TObject> Items()
-        {
-            foreach (TObject obj in this.objects)
-            {
-                yield return obj;
-            }
-
-            if (this.activeOctants == 0)
-            {
-                yield break;
-            }
-
-            for (int index = 0; index < 8; index++)
-            {
-                if (this.octants[index] == null)
-                {
-                    continue;
-                }
-
-                foreach (TObject obj in this.octants[index].Items())
-                {
-                    yield return obj;
-                }
-            }
         }
 
         public void Remove(TObject item)
@@ -374,39 +374,56 @@ namespace CubeServer.Model
         {
             if (this.objects.Count == 0 && this.HasChildren == false)
             {
-                return NoIntersections;
+                yield break;
             }
 
-            List<Intersection<TObject>> ret = new List<Intersection<TObject>>();
-
-            foreach (TObject obj in this.objects)
+            ContainmentType boxContains = box.Contains(this.region);
+            switch (boxContains)
             {
-                // test for intersection
-                Intersection<TObject> ir = obj.Intersects(box);
-                if (ir != null)
+                case ContainmentType.Contains:
                 {
-                    ret.Add(ir);
+                    // everything in this octree is
+                    // contained in within the box
+                    foreach(var ir in this.AllItems().Select(item => new Intersection<TObject>(item)))
+                    {
+                        yield return ir;
+                    }
+                    break;
+                }
+
+                case ContainmentType.Intersects:
+                {
+                    foreach (TObject obj in this.objects)
+                    {
+                        // test for intersection
+                        Intersection<TObject> ir = obj.Intersects(box);
+                        if (ir != null)
+                        {
+                            yield return ir;
+                        }
+                    }
+
+                    for (int a = 0; a < 8; a++)
+                    {
+                        if (this.octants[a] == null)
+                        {
+                            continue;
+                        }
+
+                        IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(box);
+                        foreach (var ir in hitList)
+                        {
+                            yield return ir;
+                        }
+                    }
+                    break;
+                }
+
+                default:
+                {
+                    break;
                 }
             }
-
-            for (int a = 0; a < 8; a++)
-            {
-                if (this.octants[a] == null)
-                {
-                    continue;
-                }
-
-                BoundingBox octantRegion = this.octants[a].region;
-                ContainmentType boxContains = box.Contains(octantRegion);
-
-                if ((boxContains == ContainmentType.Intersects || boxContains == ContainmentType.Contains))
-                {
-                    IEnumerable<Intersection<TObject>> hitList = this.octants[a].GetIntersection(box);
-                    ret.AddRange(hitList);
-                }
-            }
-
-            return ret;
         }
 
         private IEnumerable<Intersection<TObject>> GetIntersection(BoundingFrustum frustum)

@@ -38,7 +38,7 @@ namespace CubeServerTest
             Assert.AreEqual(Vector3.Zero, testOcTree.Region.Min);
             Assert.AreEqual(new Vector3(4, 4, 4), testOcTree.Region.Max);
 
-            Assert.AreEqual(0, testOcTree.Objects.Count);
+            Assert.AreEqual(0, testOcTree.Items.Count);
 
             // Box Intersects
             BoundingBox box1 = this.MakeCube(new Vector3(-0.5f, -0.5f, -0.5f), 1);
@@ -160,13 +160,13 @@ namespace CubeServerTest
             Assert.IsTrue(testOcTree.IsRoot);
             Assert.IsNotNull(testOcTree.Region);
 
-            var allItems = testOcTree.Items();
+            var allItems = testOcTree.AllItems();
             Assert.AreEqual(4, allItems.Count());
 
-            var octants = testOcTree.Octant.Where(o => o != null);
+            var octants = testOcTree.Octants.Where(o => o != null);
             foreach (var octant in octants)
             {
-                var childItems = octant.Items();
+                var childItems = octant.AllItems();
                 Assert.AreEqual(2, childItems.Count());
             }
         }
@@ -191,7 +191,7 @@ namespace CubeServerTest
             Assert.AreEqual(Vector3.Zero, testOcTree.Region.Min);
             Assert.AreEqual(new Vector3(4, 4, 4), testOcTree.Region.Max);
 
-            Assert.AreEqual(0, testOcTree.Objects.Count);
+            Assert.AreEqual(0, testOcTree.Items.Count);
 
             // Ray Intersects
             Ray ray1 = new Ray(new Vector3(0, 0, 0), new Vector3(1, 1, 1));
@@ -225,7 +225,7 @@ namespace CubeServerTest
             Assert.AreEqual(Vector3.Zero, testOcTree.Region.Min);
             Assert.AreEqual(new Vector3(4, 4, 4), testOcTree.Region.Max);
 
-            Assert.AreEqual(0, testOcTree.Objects.Count);
+            Assert.AreEqual(0, testOcTree.Items.Count);
 
             // Sphere Intersects - unlike bounding box, surface intersections are ignored
             BoundingSphere sphere1 = new BoundingSphere(new Vector3(2, 2, 2), 0.5f);
