@@ -8,7 +8,6 @@ namespace CubeServer.Contracts
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CubeServer.DataAccess;
     using CubeServer.DataAccess.Json;
     using Microsoft.Xna.Framework;
 
@@ -31,8 +30,9 @@ namespace CubeServer.Contracts
         /// <summary>3x3 cube query at all detail levels</summary>
         /// <param name="setId"></param>
         /// <param name="versionId"></param>
+        /// <param name="boundaryReference"></param>
         /// <param name="worldCenter"></param>
         /// <returns></returns>
-        IEnumerable<QueryDetailContract> Query(string setId, string versionId, Vector3 worldCenter);
+        IEnumerable<QueryDetailContract> Query(string setId, string versionId, string boundaryReference, Vector3 worldCenter);
     }
 }

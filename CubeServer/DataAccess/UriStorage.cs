@@ -127,9 +127,8 @@ namespace CubeServer.DataAccess
             }
 
             SetVersion setVersion = setData.FindSetVersion(setId, versionId);
-
-            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name == detail);
-            if (lod == null)
+            SetVersionLevelOfDetail lod;
+            if(!setVersion.DetailLevels.TryGetValue(detail, out lod))
             {
                 throw new NotFoundException("detailLevel");
             }
@@ -165,7 +164,7 @@ namespace CubeServer.DataAccess
             result.Set = setVersion.Name;
             result.Version = setVersion.Version;
             result.DetailLevels =
-                setVersion.DetailLevels.Select(
+                setVersion.DetailLevels.Values.Select(
                     l =>
                         new LevelOfDetailContract
                         {
@@ -180,12 +179,17 @@ namespace CubeServer.DataAccess
             return result;
         }
 
-        public Task<StorageStream> GetTextureStream(string setId, string version, string detail, string xpos, string ypos)
+        public Task<StorageStream> GetTextureStream(string setId, string versionId, string detail, string xpos, string ypos)
         {
-            SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, version);
+            LoaderResults setData = this.loadedSetData.Get();
+            if (setData == null)
+            {
+                throw new NotFoundException("setData");
+            }
 
-            SetVersionLevelOfDetail lod = setVersion.DetailLevels.FirstOrDefault(l => l.Name.Equals(detail, StringComparison.OrdinalIgnoreCase));
-            if (lod == null)
+            SetVersion setVersion = setData.FindSetVersion(setId, versionId);
+            SetVersionLevelOfDetail lod;
+            if (!setVersion.DetailLevels.TryGetValue(detail, out lod))
             {
                 throw new NotFoundException("detailLevel");
             }
@@ -249,7 +253,7 @@ namespace CubeServer.DataAccess
 
                         List<SetVersionLevelOfDetail> detailLevels = await this.ExtractDetailLevels(setMetadata, setMetadataUri);
 
-                        currentSet.DetailLevels = detailLevels.ToArray();
+                        currentSet.DetailLevels = new SortedDictionary<string, SetVersionLevelOfDetail>(detailLevels.ToDictionary(d => d.Name, d => d, StringComparer.OrdinalIgnoreCase));
                         setVersions.Add(currentSet);
                     }
                 }
@@ -279,10 +283,10 @@ namespace CubeServer.DataAccess
             return setVersion.Query(profile, worldSphere);
         }
 
-        public IEnumerable<QueryDetailContract> Query(string setId, string versionId, Vector3 worldCenter)
+        public IEnumerable<QueryDetailContract> Query(string setId, string versionId, string boundaryReferenceLoD, Vector3 worldCenter)
         {
             SetVersion setVersion = this.loadedSetData.Get().FindSetVersion(setId, versionId);
-            return setVersion.Query(worldCenter);
+            return setVersion.Query(boundaryReferenceLoD, worldCenter);
         }
 
         protected virtual void Dispose(bool disposing)
