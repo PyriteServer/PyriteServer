@@ -33,7 +33,7 @@ namespace CubeServerTest
 
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            int[][] results = setVersion.Query("L1", lod0.VirtualWorldBounds).ToArray();
+            int[][] results = setVersion.Query("L1", lod0.WorldBounds).ToArray();
             Trace.WriteLine(results.Count(), "Elements");
             timer.Stop();
             Trace.WriteLine(timer.ElapsedMilliseconds, "Query Performance (ms)");
@@ -147,7 +147,7 @@ namespace CubeServerTest
                       Name = name,
                       Cubes = ocTree,
                       SetSize = new Vector3(scale,scale,scale),
-                      VirtualWorldBounds = new BoundingBox(Vector3.Zero, worldBounds)
+                      WorldBounds = new BoundingBox(Vector3.Zero, worldBounds)
                   };
             return lod;
         }
@@ -195,7 +195,7 @@ namespace CubeServerTest
                                               Name = "L1",
                                               Cubes = ocTree,
                                               SetSize = ocTree.Region.Max - ocTree.Region.Min,
-                                              VirtualWorldBounds = new BoundingBox(Vector3.Zero, new Vector3(40, 40, 40))
+                                              WorldBounds = new BoundingBox(Vector3.Zero, new Vector3(40, 40, 40))
                                           };
 
             setVersion.DetailLevels =
@@ -225,7 +225,7 @@ namespace CubeServerTest
                                               Name = "L1",
                                               Cubes = ocTree,
                                               SetSize = ocTree.Region.Max - ocTree.Region.Min,
-                                              VirtualWorldBounds = new BoundingBox(Vector3.Zero, new Vector3(40, 40, 40))
+                                              WorldBounds = new BoundingBox(Vector3.Zero, new Vector3(40, 40, 40))
                                           };
 
             setVersion.DetailLevels =

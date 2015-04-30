@@ -170,6 +170,7 @@ namespace CubeServer.DataAccess
                         {
                             Name = l.Name,
                             SetSize = new Vector3Contract(l.SetSize),
+                            ModelBounds = new BoundingBoxContract(l.ModelBounds),
                             WorldBounds = new BoundingBoxContract(l.WorldBounds),
                             TextureSetSize = new Vector2Contract(l.TextureSetSize),
                             WorldCubeScaling = new Vector3Contract(l.WorldToCubeRatio),
@@ -374,20 +375,20 @@ namespace CubeServer.DataAccess
                 currentSetLevelOfDetail.Metadata = lodMetadataUri;
                 currentSetLevelOfDetail.Number = detailLevel;
                 currentSetLevelOfDetail.Cubes = octree;
-                currentSetLevelOfDetail.WorldBounds = new BoundingBox(
+                currentSetLevelOfDetail.ModelBounds = new BoundingBox(
                     new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
                     new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
 
                 if (virtualWorldBounds != null)
                 {
-                    currentSetLevelOfDetail.VirtualWorldBounds =
+                    currentSetLevelOfDetail.WorldBounds =
                         new BoundingBox(
                             new Vector3(virtualWorldBounds.XMin, virtualWorldBounds.YMin, virtualWorldBounds.ZMin),
                             new Vector3(virtualWorldBounds.XMax, virtualWorldBounds.YMax, virtualWorldBounds.ZMax));
                 }
                 else
                 {
-                    currentSetLevelOfDetail.VirtualWorldBounds = new BoundingBox(
+                    currentSetLevelOfDetail.WorldBounds = new BoundingBox(
                         new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
                         new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
                 }

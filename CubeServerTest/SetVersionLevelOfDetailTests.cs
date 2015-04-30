@@ -18,7 +18,7 @@ namespace CubeServerTest
         {
             BoundingBox worldBounds = new BoundingBox(new Vector3(-10, -10, -10), new Vector3(10, 10, 10));
             SetVersionLevelOfDetail detail = new SetVersionLevelOfDetail();
-            detail.VirtualWorldBounds = worldBounds;
+            detail.WorldBounds = worldBounds;
             detail.SetSize = new Vector3(4, 4, 4);
 
             Vector3 result = detail.ToWorldCoordinates(new Vector3(1, 3, 2));
@@ -32,7 +32,7 @@ namespace CubeServerTest
         {
             BoundingBox worldBounds = new BoundingBox(new Vector3(-10, -10, -10), new Vector3(10, 10, 10));
             SetVersionLevelOfDetail detail = new SetVersionLevelOfDetail();
-            detail.VirtualWorldBounds = worldBounds;
+            detail.WorldBounds = worldBounds;
             detail.SetSize = new Vector3(4, 4, 4);
 
             Vector3 result = detail.ToCubeCoordinates(new Vector3(-5, 5, 0));

@@ -38,10 +38,7 @@ namespace CubeServer.Model
         public Uri TextureTemplate { get; set; }
         public int VertexCount { get; set; }
 
-        // TODO: Rename this model bounds
-
-        // TODO: Rename this to WorldBounds, and fix up all callers
-        public BoundingBox VirtualWorldBounds
+        public BoundingBox WorldBounds
         {
             get { return this.virtualWorldBounds; }
             set
@@ -51,7 +48,7 @@ namespace CubeServer.Model
             }
         }
 
-        public BoundingBox WorldBounds { get; set; }
+        public BoundingBox ModelBounds { get; set; }
 
         public Vector3 WorldToCubeRatio
         {
