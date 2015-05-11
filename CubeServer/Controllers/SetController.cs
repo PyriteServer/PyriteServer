@@ -16,7 +16,7 @@ namespace CubeServer.Controllers
     {
         [HttpGet]
         [Route("sets/{setid}")]
-        [CacheControl(1800)]
+        [CacheControl(15)]
         public IHttpActionResult Get(string setid)
         {
             try
@@ -33,7 +33,7 @@ namespace CubeServer.Controllers
 
         [HttpGet]
         [Route("sets")]
-        [CacheControl(1800)]
+        [CacheControl(15)]
         public IHttpActionResult GetAll()
         {
             IOrderedEnumerable<SetResultContract> result = Dependency.Storage.EnumerateSets().OrderBy(set => set.Name);

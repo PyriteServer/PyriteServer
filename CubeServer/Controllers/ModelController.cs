@@ -10,12 +10,13 @@ namespace CubeServer.Controllers
     using System.Web.Http;
     using CubeServer.Contracts;
     using CubeServer.Results;
+    using System;
 
     public class ModelController : ApiController
     {
         [HttpGet]
         [Route("sets/{setid}/{version}/models/{detailLevel}/{xpos},{ypos},{zpos}")]
-        [CacheControl(1800)]
+        [CacheControl(336 * 60)]
         public async Task<IHttpActionResult> Get(string setid, string version, string detailLevel, string xpos, string ypos, string zpos, string fmt = null)
         {
             try

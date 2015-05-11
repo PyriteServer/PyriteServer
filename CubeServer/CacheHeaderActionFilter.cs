@@ -15,9 +15,9 @@ namespace CubeServer
     {
         private readonly uint maxAge;
 
-        public CacheControlAttribute(uint maxAge)
+        public CacheControlAttribute(uint maxAgeMinutes)
         {
-            this.maxAge = maxAge;
+            this.maxAge = maxAgeMinutes;
         }
 
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
@@ -27,7 +27,7 @@ namespace CubeServer
                 return;
             }
 
-            actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.FromSeconds(this.maxAge), Public = true };
+            actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue { MaxAge = TimeSpan.FromMinutes(this.maxAge), Public = true };
             base.OnActionExecuted(actionExecutedContext);
         }
     }
