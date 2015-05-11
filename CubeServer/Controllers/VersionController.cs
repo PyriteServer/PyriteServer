@@ -14,7 +14,7 @@ namespace CubeServer.Controllers
     {
         [HttpGet]
         [Route("sets/{setid}/{versionid}")]
-        [CacheControl(1800)]
+        [CacheControl(15)]
         public IHttpActionResult Get(string setid, string versionid)
         {
             try
