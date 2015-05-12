@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- end favicon -->
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Pyrite3D is a cube server designed to stream large 3D meshes to clients">
+    <title>Pyrite3D Demo</title>
+
+    <style>
+        .pure-g-valign-fix{display:block;}
+    </style>
+
+
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+    <!--<![endif]-->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="/css/layouts/marketing-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="/css/layouts/marketing.css">
+    <!--<![endif]-->
+
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/grids-responsive-min.css">
+    <!--<![endif]-->
+</head>
+<body>
+    <div style="text-align:center;">
+        <div class="pure-g pure-u-4-5" style="text-align:left;">
+            <div class="pure-u-1-1">
+                <h1>Discover Sets</h1>
+                Enumerate all sets in storage
+            </div>
+
+            <h3 class="pure-u-1-5">Parameters</h3>
+            <div class="pure-u-4-5 pure-form">
+                <input type="text" id="apiUrl" class="pure-text pure-input-2-5" value="http://api.pyrite3d.org/sets"/>
+                <button class="pure-button pure-button-primary pure-input-1-5" onclick="onSendRequest()" id="send">Send Request</button>
+            </div>
+
+            <h3 class="pure-u-1-5">Console</h3>
+            <div class="pure-u-4-5">
+                <div id="output"/>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script>
+    var outputDiv = document.getElementById("output");
+    var sendButton = document.getElementById("send");
+
+    var apiUrl = document.getElementById("apiUrl");
+
+    var xhr = createCORSRequest('GET', apiUrl.value);
+    if (!xhr) {
+        outputDiv.value = "Cross-Origin Requests not supported by your browser.";
+        sendButton.isDisabled = true;
+    }
+
+    // Response handlers.
+    xhr.onload = function() {
+        var text = xhr.responseText;
+        outputDiv.innerText = parseResponse(text);
+    };
+
+    xhr.onerror = function() {
+        outputDiv.innerText += "Error sending request\r\n";
+        outputDiv.innerText += xhr.status + "\r\n";
+    };
+
+    function onSendRequest() {
+        xhr.send();
+    }
+
+    function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
+
+            // Check if the XMLHttpRequest object has a "withCredentials" property.
+            // "withCredentials" only exists on XMLHTTPRequest2 objects.
+            xhr.open(method, url, true);
+
+        } else if (typeof XDomainRequest != "undefined") {
+
+            // Otherwise, check if XDomainRequest.
+            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+
+        } else {
+
+            // Otherwise, CORS is not supported by the browser.
+            xhr = null;
+
+        }
+        return xhr;
+    }
+
+    function parseResponse(responseText)
+    {
+        return responseText;
+    }
+
+    function parseQueryString() {
+        var qs = window.location.search;
+        if(qs.length > 0) {
+            qs = qs.substr(1);
+        }
+
+        var result = {};
+
+        if(qs == null)
+        {
+            return result;
+        }
+
+        var keyValues = qs.split("&");
+
+        for(var keyValue in keyValues)
+        {
+            keyValueSplit = keyValues[keyValue].split("=");
+
+            if(keyValueSplit.length == 1)
+            {
+                result[keyValueSplit[0]] = null;
+            }
+            else
+            {
+                result[keyValueSplit[0]] = decodeURIComponent(keyValueSplit[1]);
+            }
+        }
+
+        return result;
+    }
+
+    function loadJS(filename){
+        var fileref=document.createElement('script')
+        fileref.setAttribute("type","text/javascript")
+        fileref.setAttribute("src", filename)
+
+        if (typeof fileref!="undefined") {
+            document.getElementsByTagName("head")[0].appendChild(fileref)
+        }
+    }
+</script>
+</html>
