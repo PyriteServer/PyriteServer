@@ -1,19 +1,16 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="SetContract.cs" company="Microsoft Corporation">
+// // // <copyright file="VersionResultContract.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess.Json
+namespace CubeServer.Contracts
 {
     using Newtonsoft.Json;
 
-    public class SetContract
+    public class VersionResultContract
     {
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("versions")]
-        public SetVersionContract[] Versions { get; set; }
     }
 }

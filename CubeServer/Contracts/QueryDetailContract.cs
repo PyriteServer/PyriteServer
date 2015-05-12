@@ -1,19 +1,20 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="SetContract.cs" company="Microsoft Corporation">
+// // // <copyright file="QueryDetailContract.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess.Json
+namespace CubeServer.Contracts
 {
+    using System.Collections.Generic;
     using Newtonsoft.Json;
 
-    public class SetContract
+    public class QueryDetailContract
     {
+        [JsonProperty("cubes")]
+        public IEnumerable<int[]> Cubes { get; set; }
+
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("versions")]
-        public SetVersionContract[] Versions { get; set; }
     }
 }

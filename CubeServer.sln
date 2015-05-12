@@ -18,6 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeServerTest", "CubeServerTest\CubeServerTest.csproj", "{48A302BE-A34A-4990-825C-D2F90AC7527A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{F5998EC7-0ECE-4CD2-8454-3B2EC6400CB8}"
+	ProjectSection(SolutionItems) = preProject
+		Licence = Licence
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

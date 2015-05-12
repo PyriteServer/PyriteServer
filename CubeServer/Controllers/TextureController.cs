@@ -14,12 +14,13 @@ namespace CubeServer.Controllers
     public class TextureController : ApiController
     {
         [HttpGet]
-        [Route("sets/{setid}/{version}/textures/{detail}/{textureid}")]
-        public async Task<IHttpActionResult> Get(string setid, string version, string detail, string textureid)
+        [Route("sets/{setid}/{version}/textures/{detail}/{xpos},{ypos}")]
+        [CacheControl(336 * 60)]
+        public async Task<IHttpActionResult> Get(string setid, string version, string detail, string xpos, string ypos)
         {
             try
             {
-                StorageStream textureStream = await new HttpCubeStorage().GetTextureStream(setid, version, detail, textureid);
+                StorageStream textureStream = await Dependency.Storage.GetTextureStream(setid, version, detail, xpos, ypos);
                 return new StreamResult(textureStream, this.Request);
             }
             catch (NotFoundException)

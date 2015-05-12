@@ -29,6 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,6 +40,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Elmah">
+      <HintPath>..\packages\elmah.corelibrary.1.2.2\lib\Elmah.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -58,18 +62,38 @@
     <Reference Include="Microsoft.WindowsAzure.Storage">
       <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
@@ -77,18 +101,9 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http">
     </Reference>
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.0\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
     <Reference Include="System.Net.Http.WebRequest">
-    </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.0\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
@@ -109,11 +124,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheHeaderActionFilter.cs" />
+    <Compile Include="Contracts\BoundingBoxContract.cs" />
+    <Compile Include="Contracts\IBounds.cs" />
     <Compile Include="Contracts\ICubeStorage.cs" />
     <Compile Include="Contracts\ISecretsProvider.cs" />
+    <Compile Include="Contracts\LevelOfDetailContract.cs" />
+    <Compile Include="Contracts\QueryDetailContract.cs" />
+    <Compile Include="Contracts\QueryResultContract.cs" />
     <Compile Include="Contracts\ResultWrapper.cs" />
+    <Compile Include="Contracts\SetVersionResultContract.cs" />
     <Compile Include="Contracts\StorageStream.cs" />
-    <Compile Include="Controllers\CubeController.cs" />
+    <Compile Include="Contracts\Vector2Contract.cs" />
+    <Compile Include="Contracts\Vector3Contract.cs" />
+    <Compile Include="Contracts\VersionResultContract.cs" />
+    <Compile Include="Controllers\QueryController.cs" />
     <Compile Include="Controllers\ModelController.cs" />
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
@@ -121,7 +146,6 @@
     <Compile Include="DataAccess\AzureUriStorage.cs" />
     <Compile Include="DataAccess\FileSecretsProvider.cs" />
     <Compile Include="DataAccess\Json\ExtentsContract.cs" />
-    <Compile Include="DataAccess\FileCubeStorage.cs" />
     <Compile Include="DataAccess\Json\GridSizeContract.cs" />
     <Compile Include="DataAccess\LoaderException.cs" />
     <Compile Include="DataAccess\LoaderResults.cs" />
@@ -131,13 +155,9 @@
     <Compile Include="DataAccess\Json\SetMetadataContract.cs" />
     <Compile Include="DataAccess\Json\SetResultContract.cs" />
     <Compile Include="DataAccess\Json\SetVersionContract.cs" />
+    <Compile Include="DataAccess\ModelFormats.cs" />
     <Compile Include="DataAccess\UriStorage.cs" />
-    <Compile Include="DataAccess\VersionResultContract.cs" />
     <Compile Include="Dependency.cs" />
-    <Compile Include="CubeBounds.cs" />
-    <Compile Include="HttpCubeStorage.cs" />
-    <Compile Include="IBounds.cs" />
-    <Compile Include="Intersection.cs" />
     <Compile Include="Microsoft.Xna\BoundingBox.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -153,20 +173,24 @@
     <Compile Include="Microsoft.Xna\Ray.cs" />
     <Compile Include="Microsoft.Xna\Vector2.cs" />
     <Compile Include="Microsoft.Xna\Vector4.cs" />
+    <Compile Include="Model\CubeBounds.cs" />
+    <Compile Include="Model\Intersection.cs" />
+    <Compile Include="Model\OcTree.cs" />
     <Compile Include="Model\Set.cs" />
     <Compile Include="Model\SetVersion.cs" />
+    <Compile Include="Model\SetVersionLevelOfDetail.cs" />
     <Compile Include="NotFoundException.cs" />
-    <Compile Include="OcTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Results\StreamResult.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Microsoft.Xna\Vector3.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Data\accountkey.txt" />
     <Content Include="default.html" />
+    <Content Include="explorer.html" />
     <Content Include="Global.asax" />
-    <None Include="Properties\PublishProfiles\DxCubeServer.pubxml" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -174,6 +198,9 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\pyrite - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\pyrite - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\pyrite.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SampleData\" />

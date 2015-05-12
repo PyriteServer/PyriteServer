@@ -6,12 +6,20 @@
 
 namespace CubeServer.DataAccess.Json
 {
+    using Microsoft.Xna.Framework;
+
     public class CubeMetadataContract
     {
         public bool[][][] CubeExists { get; set; }
 
-        public ExtentsContract Extents { get; set; }
+        public ExtentsContract WorldBounds { get; set; }
 
-        public GridSizeContract GridSize { get; set; }
+        public ExtentsContract VirtualWorldBounds { get; set; }
+
+        public Vector3 SetSize { get; set; }
+
+        public Vector2 TextureSetSize { get; set; }
+
+        public int VertexCount { get; set; }
     }
 }

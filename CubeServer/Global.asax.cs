@@ -13,6 +13,7 @@ namespace CubeServer
     using System.Net.Http.Formatting;
     using System.Web;
     using System.Web.Http;
+    using System.Web.Http.Cors;
     using CubeServer.Contracts;
     using CubeServer.DataAccess;
 
@@ -44,6 +45,12 @@ namespace CubeServer
 
             this.storage = new AzureUriStorage(connProvider.Value, setRootUrl);
             Dependency.Storage = this.storage;
+
+            // wait reasonable amount of time for first load
+            this.storage.WaitLoadCompleted.WaitOne(30000);
+            
+            var cors = new EnableCorsAttribute("*", "*", "*");
+            GlobalConfiguration.Configuration.EnableCors(cors);
 
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
             GlobalConfiguration.Configuration.Formatters.Clear();

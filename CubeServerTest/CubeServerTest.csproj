@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,11 +51,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FileCubeStorageTest.cs" />
     <Compile Include="MetadataLoaderTest.cs" />
     <Compile Include="OcTreeTest.cs" />
     <Compile Include="OcTreeUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryTest.cs" />
+    <Compile Include="SetVersionLevelOfDetailTests.cs" />
     <Compile Include="UriStorageTest.cs" />
   </ItemGroup>
   <ItemGroup>

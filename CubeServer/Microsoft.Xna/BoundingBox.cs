@@ -137,17 +137,21 @@ namespace Microsoft.Xna.Framework
 
             double dmin = 0;
 
-            if (sphere.Center.X - Min.X <= sphere.Radius)
+            // Fixed bug in logic for sphere intersection
+
+            if (sphere.Center.X < Min.X)
                 dmin += (sphere.Center.X - Min.X) * (sphere.Center.X - Min.X);
-            else if (Max.X - sphere.Center.X <= sphere.Radius)
+            else if (Max.X < sphere.Center.X)
                 dmin += (sphere.Center.X - Max.X) * (sphere.Center.X - Max.X);
-            if (sphere.Center.Y - Min.Y <= sphere.Radius)
+
+            if (sphere.Center.Y < Min.Y)
                 dmin += (sphere.Center.Y - Min.Y) * (sphere.Center.Y - Min.Y);
-            else if (Max.Y - sphere.Center.Y <= sphere.Radius)
+            else if (Max.Y < sphere.Center.Y )
                 dmin += (sphere.Center.Y - Max.Y) * (sphere.Center.Y - Max.Y);
-            if (sphere.Center.Z - Min.Z <= sphere.Radius)
+
+            if (sphere.Center.Z < Min.Z)
                 dmin += (sphere.Center.Z - Min.Z) * (sphere.Center.Z - Min.Z);
-            else if (Max.Z - sphere.Center.Z <= sphere.Radius)
+            else if (Max.Z < sphere.Center.Z)
                 dmin += (sphere.Center.Z - Max.Z) * (sphere.Center.Z - Max.Z);
 
             if (dmin <= sphere.Radius * sphere.Radius)

@@ -10,13 +10,13 @@ namespace CubeServer.Controllers
     using System.Linq;
     using System.Web.Http;
     using CubeServer.Contracts;
-    using CubeServer.DataAccess;
     using CubeServer.DataAccess.Json;
 
     public class SetController : ApiController
     {
         [HttpGet]
         [Route("sets/{setid}")]
+        [CacheControl(15)]
         public IHttpActionResult Get(string setid)
         {
             try
@@ -33,6 +33,7 @@ namespace CubeServer.Controllers
 
         [HttpGet]
         [Route("sets")]
+        [CacheControl(15)]
         public IHttpActionResult GetAll()
         {
             IOrderedEnumerable<SetResultContract> result = Dependency.Storage.EnumerateSets().OrderBy(set => set.Name);

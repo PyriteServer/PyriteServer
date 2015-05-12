@@ -13,6 +13,8 @@ namespace CubeServer.Model
         public DateTime Loaded { get; set; }
         public string Name { get; set; }
         public Uri SourceUri { get; set; }
-        public SetVersion[] Versions { get; set; }
+        public string Version { get; set; }
+        public string MaterialName { get; set; }
+        public SetVersionLevelOfDetail[] DetailLevels { get; set; }
     }
 }
