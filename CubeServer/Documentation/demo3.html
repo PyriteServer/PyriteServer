@@ -95,8 +95,8 @@
     <div style="text-align:center;">
         <div class="pure-g pure-u-4-5" style="text-align:left;">
             <div class="pure-u-1-1">
-                <h1>Discover Set Version</h1>
-                Enumerate all versions of a set in storage
+                <h1>Set Metadata</h1>
+                Get Set Rendering information 
             </div>
 
             <h3>Parameters</h3>
@@ -104,11 +104,15 @@
                 <fieldset>
                     <div class="pure-control-group">
                         <label for="apiUrl">Base URL</label>
-                        <input type="text" id="apiUrl" class="pure-text pure-input-4-5" value="http://api.pyrite3d.org/sets/{set}" /><br />
+                        <input type="text" id="apiUrl" class="pure-text pure-input-4-5" value="http://api.pyrite3d.org/sets/{set}/{version}" /><br />
                     </div>
                     <div class="pure-control-group">
                         <label for="setName">Set Name</label>
                         <input type="text" id="setName" class="pure-text pure-input-4-5" placeholder="{set}" /><br />
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="versionName">Version Name</label>
+                        <input type="text" id="versionName" class="pure-text pure-input-4-5" placeholder="{version}" /><br />
                     </div>
                     <div class="pure-controls">
                         <button class="pure-button pure-button-primary pure-input-1-5" onclick="onSendRequest()" id="send">Send Request</button>
@@ -132,35 +136,44 @@
 
     var apiUrl = document.getElementById("apiUrl");
     var setName = document.getElementById("setName");
+    var versionName = document.getElementById("versionName");
 
     var xhr;
 
     var qs = parseQueryString();
 
     var qsSet = qs["set"];
+    var qsVersion = qs["version"];
 
     if (qsSet != undefined) {
         setName.value = qsSet;
+    }
+
+    if (qsVersion != undefined) {
+        versionName.value = qsVersion;
+    }
+
+    if (qsSet != undefined && qsVersion != undefined) {
         onSendRequest();
     }
     
     function onSendRequest() {
 
         var set = setName.value;
+        var version = versionName.value
         var url = apiUrl.value.replace("{set}", set);
+        var url = url.replace("{version}", version);
 
         xhr = createRequest('GET', url);
 
         xhr.onload = function () {
             var text = xhr.responseText;
 
-            outputDiv.innerText += xhr.status + " " +
-                "" + xhr.statusText + "" +
-                "\r\n";
+            outputDiv.innerText += xhr.status + " " + xhr.statusText + "\r\n";
             outputDiv.innerText += text;
 
             var responseDiv = document.getElementById("response");
-            parseResponse(setName.value, text, responseDiv);
+            parseResponse(set, version, text, responseDiv);
         };
 
         xhr.onerror = function () {
@@ -201,13 +214,9 @@
         return xhr;
     }
 
-    function parseResponse(set, responseText, div) {
+    function parseResponse(set, version, responseText, div) {
         var response = JSON.parse(responseText);
         if (response["status"] == "OK") {
-
-            while (div.hasChildNodes()) {
-                div.removeChild(div.firstChild);
-            }
 
             var successElement = document.createElement("div");
             successElement.text = "Success";

@@ -189,8 +189,8 @@
     <Content Include="App_Readme\Elmah.txt" />
     <Content Include="Data\accountkey.txt" />
     <Content Include="default.html" />
-    <Content Include="Documentation\demo2.html" />
     <Content Include="Documentation\demo1.html" />
+    <Content Include="Documentation\demo3.html" />
     <Content Include="explorer.html" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
