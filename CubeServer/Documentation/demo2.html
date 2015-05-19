@@ -95,18 +95,18 @@
     <div style="text-align:center;">
         <div class="pure-g pure-u-4-5" style="text-align:left;">
             <div class="pure-u-1-1">
-                <h1>Discover Sets</h1>
-                Enumerate all sets in storage
+                <h1>Discover Set Version</h1>
+                Enumerate all versions of a set in storage
             </div>
 
             <h3>Parameters</h3>
             <div class="pure-form">
-                <input type="text" id="apiUrl" class="pure-text pure-input-2-5" value="http://api.pyrite3d.org/sets"/>
+                <input type="text" id="apiUrl" class="pure-text pure-input-2-5" value="http://api.pyrite3d.org/sets/{set}"/>
                 <button class="pure-button pure-button-primary pure-input-1-5" onclick="onSendRequest()" id="send">Send Request</button>
             </div>
 
             <h3>Console</h3>
-            <div id="output" class="code" style="height:4em;">
+            <div id="output" class="code" style="height:6em;">
             </div>
             
             <h3>Parsed Response</h3>
@@ -122,8 +122,16 @@
     var apiUrl = document.getElementById("apiUrl");
 
     var xhr;
-    
 
+    var qs = parseQueryString();
+
+    var set = qs["set"];
+
+    if (set != undefined) {
+        apiUrl.value = apiUrl.value.replace("{set}", set);
+        onSendRequest();
+    }
+    
     function onSendRequest() {
         xhr = createRequest('GET', apiUrl.value);
 
