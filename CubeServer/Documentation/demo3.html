@@ -222,19 +222,45 @@
             successElement.text = "Success";
             div.appendChild(successElement);
 
-            var setVersions = response["result"];
+            var result = response["result"];
+            var detailLevels = result["detailLevels"];
 
-            for (index in setVersions) {
-                var version = setVersions[index];
-                var setElement = document.createElement("div");
+            for (index in detailLevels) {
+                var detailLevel = detailLevels[index];
+                var detailLevelName = detailLevel["name"];
+
+                var detailElement = document.createElement("div");
                 var anchorElement = document.createElement("a");
-                anchorElement.href = "./demo3.html?set=" + set + "&version=" + version["name"];
-                anchorElement.innerText = set + ":" + version["name"];
-                setElement.appendChild(anchorElement);
-                div.appendChild(setElement);
+                var detailLevelBreakOut = detailLevelName + "-focus";
+                anchorElement.href = "javascript:toggle('" + detailLevelBreakOut + "')";
+                anchorElement.innerText = detailLevel["name"];
+                var detailLevelElement = document.createElement("div");
+                detailLevelElement.setAttribute("style", "display:none");
+                detailLevelElement.setAttribute("id", detailLevelBreakOut);
+                detailLevelElement.innerHTML = "Cubes:" + xyz(detailLevel.setSize);
+                detailLevelElement.innerHTML += "<br>Model:" + xyz(detailLevel.modelBounds.min) + " -> " + xyz(detailLevel.modelBounds.max);
+                detailLevelElement.innerHTML += "<br>World:" + xyz(detailLevel.worldBounds.min) + " -> " + xyz(detailLevel.worldBounds.max);
+                detailLevelElement.innerHTML += "<br>C->W Scale:" + xyz(detailLevel.worldCubeScale);
+
+                detailElement.appendChild(anchorElement);
+                detailElement.appendChild(detailLevelElement);
+                div.appendChild(detailElement);
             }
         } else {
             div.innerText = "Error: " + response["error"];
+        }
+    }
+
+    function xyz(vector) {
+        return "v3(" + vector.x + "," + vector.y + "," + vector.z + ")";
+    }
+
+    function toggle(elementName) {
+        var element = document.getElementById(elementName);
+        if (element.style.display == "none") {
+            element.style.display = "";
+        } else {
+            element.style.display = "none";
         }
     }
 
