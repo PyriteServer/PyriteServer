@@ -7,6 +7,7 @@
 namespace CubeServer.DataAccess
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using CubeServer.DataAccess.Json;
     using CubeServer.Model;
@@ -24,7 +25,6 @@ namespace CubeServer.DataAccess
         {
             return Load(data, new OcTree<CubeBounds>());
         }
-
 
         public static OcTree<CubeBounds> Load(Stream metadata, OcTree<CubeBounds> ocTree)
         {
@@ -50,28 +50,39 @@ namespace CubeServer.DataAccess
                 throw new ArgumentNullException("ocTree");
             }
 
+            ocTree.Add(LoadCubeBounds(data));
+
+            return ocTree;
+        }
+
+        public static IEnumerable<CubeBounds> LoadCubeBounds(CubeMetadataContract data)
+        {
+            if (data == null)
+            {
+                throw new ArgumentNullException("data");
+            }
+
             for (int x = 0; x < data.CubeExists.Length; x++)
             {
-                var xData = data.CubeExists[x];
+                bool[][] xData = data.CubeExists[x];
 
                 for (int y = 0; y < xData.Length; y++)
                 {
-                    var xyData = xData[y];
+                    bool[] xyData = xData[y];
                     for (int z = 0; z < xyData.Length; z++)
                     {
-                        var xyzData = xyData[z];
+                        bool xyzData = xyData[z];
 
                         if (xyzData)
                         {
-                            var cubeBoundingBox = new BoundingBox { Min = new Vector3(x, y, z), Max = new Vector3(x+1,y+1,z+1) };
+                            // TODO: tranform cubebounding box into universal space
+                            BoundingBox cubeBoundingBox = new BoundingBox { Min = new Vector3(x, y, z), Max = new Vector3(x + 1, y + 1, z + 1) };
 
-                            ocTree.Add(new CubeBounds{BoundingBox = cubeBoundingBox});
+                            yield return new CubeBounds { BoundingBox = cubeBoundingBox };
                         }
                     }
                 }
             }
-
-            return ocTree;
         }
     }
 }

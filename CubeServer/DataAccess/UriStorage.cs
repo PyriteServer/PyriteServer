@@ -201,6 +201,78 @@ namespace CubeServer.DataAccess
             return this.GetStorageStreamForPath(texturePath);
         }
 
+        public async Task<LoaderResults> LoadMetadata2()
+        {
+            LoaderResults results = new LoaderResults();
+
+            List<LoaderException> exceptions = new List<LoaderException>();
+            Dictionary<string, Dictionary<string, SetVersion>> sets =
+                new Dictionary<string, Dictionary<string, SetVersion>>(StringComparer.InvariantCultureIgnoreCase);
+
+            SetContract[] setsMetadata = null;
+            Uri storageRootUri = null;
+            try
+            {
+                storageRootUri = new Uri(this.storageRoot);
+
+                setsMetadata = await this.Deserialize<SetContract[]>(storageRootUri);
+                if (setsMetadata == null)
+                {
+                    throw new SerializationException("Deserialization Failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                exceptions.Add(new LoaderException("Sets", this.storageRoot, ex));
+                results.Errors = exceptions.ToArray();
+                results.Sets = sets;
+                return results;
+            }
+
+            List<SetVersion> setVersions = new List<SetVersion>();
+
+            foreach (SetContract set in setsMetadata)
+            {
+                try
+                {
+                    foreach (SetVersionContract version in set.Versions)
+                    {
+                        Uri setMetadataUri = new Uri(storageRootUri, version.Url);
+
+                        Trace.WriteLine(String.Format("Set: {0}, Url {1}", set.Name, setMetadataUri));
+                        SetMetadataContract setMetadata = await this.Deserialize<SetMetadataContract>(setMetadataUri);
+                        if (setMetadata == null)
+                        {
+                            throw new SerializationException("Set metadata deserialization Failed");
+                        }
+
+                        Trace.WriteLine(String.Format("Discovered set {0}/{1} at {2}", set.Name, version.Name, version.Url));
+
+                        Uri material = new Uri(setMetadataUri, setMetadata.Mtl);
+
+                        SetVersion currentSet = new SetVersion { SourceUri = setMetadataUri, Name = set.Name, Version = version.Name, Material = material };
+
+                        List<SetVersionLevelOfDetail> detailLevels = await this.ExtractDetailLevels2(setMetadata, setMetadataUri);
+
+                        currentSet.DetailLevels = new SortedDictionary<string, SetVersionLevelOfDetail>(detailLevels.ToDictionary(d => d.Name, d => d, StringComparer.OrdinalIgnoreCase));
+                        setVersions.Add(currentSet);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(new LoaderException("Set", storageRootUri.ToString(), ex));
+                }
+            }
+
+            sets = setVersions.GroupBy(s => s.Name).ToDictionary(s => s.Key, this.GenerateVersionMap, StringComparer.OrdinalIgnoreCase);
+
+            results.Errors = exceptions.ToArray();
+            results.Sets = sets;
+
+            return results;
+        }
+
+
         public async Task<LoaderResults> LoadMetadata()
         {
             LoaderResults results = new LoaderResults();
@@ -271,6 +343,7 @@ namespace CubeServer.DataAccess
 
             return results;
         }
+
 
         public IEnumerable<int[]> Query(string setId, string versionId, string detail, BoundingBox worldBox)
         {
@@ -362,6 +435,63 @@ namespace CubeServer.DataAccess
             {
                 Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
                 CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
+
+                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
+                octree.UpdateTree();
+
+                Vector3 cubeBounds = cubeMetadata.SetSize;
+
+                ExtentsContract worldBounds = cubeMetadata.WorldBounds;
+                ExtentsContract virtualWorldBounds = cubeMetadata.VirtualWorldBounds;
+
+                SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
+                currentSetLevelOfDetail.Metadata = lodMetadataUri;
+                currentSetLevelOfDetail.Number = detailLevel;
+                currentSetLevelOfDetail.Cubes = octree;
+                currentSetLevelOfDetail.ModelBounds = new BoundingBox(
+                    new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
+                    new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+
+                if (virtualWorldBounds != null)
+                {
+                    currentSetLevelOfDetail.WorldBounds =
+                        new BoundingBox(
+                            new Vector3(virtualWorldBounds.XMin, virtualWorldBounds.YMin, virtualWorldBounds.ZMin),
+                            new Vector3(virtualWorldBounds.XMax, virtualWorldBounds.YMax, virtualWorldBounds.ZMax));
+                }
+                else
+                {
+                    currentSetLevelOfDetail.WorldBounds = new BoundingBox(
+                        new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
+                        new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
+                }
+
+                currentSetLevelOfDetail.SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z);
+                currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
+                currentSetLevelOfDetail.VertexCount = cubeMetadata.VertexCount;
+
+                currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
+                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri, "{x}_{y}_{z}.{format}");
+
+                currentSetLevelOfDetail.TextureSetSize = cubeMetadata.TextureSetSize;
+
+                detailLevels.Add(currentSetLevelOfDetail);
+            }
+            return detailLevels;
+        }
+
+        private async Task<List<SetVersionLevelOfDetail>> ExtractDetailLevels2(SetMetadataContract setMetadata, Uri baseUrl)
+        {
+            OcTree<CubeBounds> ocTree = new OcTree<CubeBounds>();
+
+            List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
+            foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
+            {
+
+                Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
+                CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
+
+                ocTree.Add(MetadataLoader.LoadCubeBounds(cubeMetadata));
 
                 OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
                 octree.UpdateTree();
