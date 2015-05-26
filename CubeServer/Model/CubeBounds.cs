@@ -1,5 +1,5 @@
 ﻿// // //------------------------------------------------------------------------------------------------- 
-// // // <copyright file="IBounds.cs" company="Microsoft Corporation">
+// // // <copyright file="CubeBounds.cs" company="Microsoft Corporation">
 // // // Copyright (c) Microsoft Corporation. All rights reserved.
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
@@ -14,18 +14,28 @@ namespace CubeServer.Model
     {
         public BoundingBox BoundingBox { get; set; }
         public BoundingSphere BoundingSphere { get; set; }
+        public string LevelOfDetail { get; set; }
+
+        public override string ToString()
+        {
+            return String.Format("{0} BoundingBox:{1}", this.GetType().Name, this.BoundingBox);
+        }
 
         public Intersection<CubeBounds> Intersects(Ray ray)
         {
             if (this.BoundingBox.Max != this.BoundingBox.Min)
             {
                 if (this.BoundingBox.Intersects(ray) != null)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
             else if (this.BoundingSphere.Radius != 0f)
             {
                 if (this.BoundingSphere.Intersects(ray) != null)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
 
             return null;
@@ -44,7 +54,9 @@ namespace CubeServer.Model
                 ir = this.Intersects(obj.BoundingSphere);
             }
             else
+            {
                 return null;
+            }
 
             if (ir != null)
             {
@@ -60,12 +72,16 @@ namespace CubeServer.Model
             if (this.BoundingBox.Max != this.BoundingBox.Min)
             {
                 if (this.BoundingBox.Contains(intersectionSphere) != ContainmentType.Disjoint)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
             else if (this.BoundingSphere.Radius != 0f)
             {
                 if (this.BoundingSphere.Contains(intersectionSphere) != ContainmentType.Disjoint)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
 
             return null;
@@ -77,12 +93,16 @@ namespace CubeServer.Model
             {
                 ContainmentType ct = this.BoundingBox.Contains(intersectionBox);
                 if (ct != ContainmentType.Disjoint)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
             else if (this.BoundingSphere.Radius != 0f)
             {
                 if (this.BoundingSphere.Contains(intersectionBox) != ContainmentType.Disjoint)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
 
             return null;
@@ -94,20 +114,19 @@ namespace CubeServer.Model
             {
                 ContainmentType ct = this.BoundingBox.Contains(frustum);
                 if (ct != ContainmentType.Disjoint)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
             else if (this.BoundingSphere.Radius != 0f)
             {
                 if (this.BoundingSphere.Contains(frustum) != ContainmentType.Disjoint)
+                {
                     return new Intersection<CubeBounds>(this);
+                }
             }
 
             return null;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("{0} BoundingBox:{1}", this.GetType().Name, this.BoundingBox);
         }
     }
 }

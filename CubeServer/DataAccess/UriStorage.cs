@@ -433,10 +433,12 @@ namespace CubeServer.DataAccess
             List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
             foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
             {
+                string detailLevelName = "L" + detailLevel;
+
                 Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
                 CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
 
-                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
+                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata, detailLevelName);
                 octree.UpdateTree();
 
                 Vector3 cubeBounds = cubeMetadata.SetSize;
@@ -487,14 +489,11 @@ namespace CubeServer.DataAccess
             List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
             foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
             {
-
-                Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
+                string detailLevelName = "L" + detailLevel;
+                Uri lodMetadataUri = new Uri(baseUrl, detailLevelName + "/metadata.json");
                 CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
 
-                ocTree.Add(MetadataLoader.LoadCubeBounds(cubeMetadata));
-
-                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata);
-                octree.UpdateTree();
+                ocTree.Add(MetadataLoader.LoadCubeBounds(cubeMetadata, detailLevelName));
 
                 Vector3 cubeBounds = cubeMetadata.SetSize;
 
@@ -504,7 +503,7 @@ namespace CubeServer.DataAccess
                 SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
                 currentSetLevelOfDetail.Metadata = lodMetadataUri;
                 currentSetLevelOfDetail.Number = detailLevel;
-                currentSetLevelOfDetail.Cubes = octree;
+                currentSetLevelOfDetail.Cubes = ocTree;
                 currentSetLevelOfDetail.ModelBounds = new BoundingBox(
                     new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
                     new Vector3(worldBounds.XMax, worldBounds.YMax, worldBounds.ZMax));
@@ -534,6 +533,9 @@ namespace CubeServer.DataAccess
 
                 detailLevels.Add(currentSetLevelOfDetail);
             }
+
+            ocTree.UpdateTree();
+
             return detailLevels;
         }
 

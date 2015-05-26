@@ -212,7 +212,7 @@ namespace CubeServerTest
             OcTree<CubeBounds> ocTree = new OcTree<CubeBounds>(new BoundingBox(Vector3.Zero, Vector3.Zero), new CubeBounds[] { }, 2);
             using (Stream metadataStream = new FileStream(".\\data\\validdataset2\\v1\\metadata.json", FileMode.Open, FileAccess.Read))
             {
-                ocTree = MetadataLoader.Load(metadataStream, ocTree);
+                ocTree = MetadataLoader.Load(metadataStream, ocTree, "L1");
             }
 
             ocTree.UpdateTree();
