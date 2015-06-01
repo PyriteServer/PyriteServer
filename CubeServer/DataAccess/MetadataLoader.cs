@@ -16,17 +16,17 @@ namespace CubeServer.DataAccess
 
     public class MetadataLoader
     {
-        public static OcTree<CubeBounds> Load(Stream metadata, string name)
+        public static OcTree<CubeBounds> Load(Stream metadata, string name, Vector3 cubeSize)
         {
-            return Load(metadata, new OcTree<CubeBounds>(), name);
+            return Load(metadata, new OcTree<CubeBounds>(), name, cubeSize);
         }
 
-        public static OcTree<CubeBounds> Load(CubeMetadataContract data, string name)
+        public static OcTree<CubeBounds> Load(CubeMetadataContract data, string name, Vector3 cubeSize)
         {
-            return Load(data, new OcTree<CubeBounds>(), name);
+            return Load(data, new OcTree<CubeBounds>(), name, cubeSize);
         }
 
-        public static OcTree<CubeBounds> Load(Stream metadata, OcTree<CubeBounds> ocTree, string name)
+        public static OcTree<CubeBounds> Load(Stream metadata, OcTree<CubeBounds> ocTree, string name, Vector3 cubeSize)
         {
             CubeMetadataContract data;
             using (StreamReader tr = new StreamReader(metadata))
@@ -35,10 +35,10 @@ namespace CubeServer.DataAccess
                 data = new JsonSerializer().Deserialize<CubeMetadataContract>(jr);
             }
 
-            return Load(data, ocTree, name);
+            return Load(data, ocTree, name, cubeSize);
         }
 
-        public static OcTree<CubeBounds> Load(CubeMetadataContract data, OcTree<CubeBounds> ocTree, string name)
+        public static OcTree<CubeBounds> Load(CubeMetadataContract data, OcTree<CubeBounds> ocTree, string name, Vector3 cubeSize)
         {
             if (data == null)
             {
@@ -50,12 +50,12 @@ namespace CubeServer.DataAccess
                 throw new ArgumentNullException("ocTree");
             }
 
-            ocTree.Add(LoadCubeBounds(data, name));
+            ocTree.Add(LoadCubeBounds(data, name, cubeSize));
 
             return ocTree;
         }
 
-        public static IEnumerable<CubeBounds> LoadCubeBounds(CubeMetadataContract data, string name)
+        public static IEnumerable<CubeBounds> LoadCubeBounds(CubeMetadataContract data, string name, Vector3 cubeSize)
         {
             if (data == null)
             {
@@ -75,8 +75,7 @@ namespace CubeServer.DataAccess
 
                         if (xyzData)
                         {
-                            // TODO: tranform cubebounding box into universal space
-                            BoundingBox cubeBoundingBox = new BoundingBox { Min = new Vector3(x, y, z), Max = new Vector3(x + 1, y + 1, z + 1) };
+                            BoundingBox cubeBoundingBox = new BoundingBox { Min = new Vector3(x, y, z), Max = new Vector3(x + cubeSize.X, y + cubeSize.Y, z + cubeSize.Z) };
 
                             yield return new CubeBounds { BoundingBox = cubeBoundingBox, LevelOfDetail = name};
                         }

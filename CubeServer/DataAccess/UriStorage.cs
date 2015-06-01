@@ -20,6 +20,9 @@ namespace CubeServer.DataAccess
     using CubeServer.Contracts;
     using CubeServer.DataAccess.Json;
     using CubeServer.Model;
+    using Microsoft.Data.OData.Query.SemanticAst;
+    using Microsoft.Owin.Logging;
+    using Microsoft.WindowsAzure.Storage.Blob.Protocol;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
 
@@ -438,7 +441,7 @@ namespace CubeServer.DataAccess
                 Uri lodMetadataUri = new Uri(baseUrl, "L" + detailLevel + "/metadata.json");
                 CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
 
-                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata, detailLevelName);
+                OcTree<CubeBounds> octree = MetadataLoader.Load(cubeMetadata, detailLevelName, new Vector3(1,1,1));
                 octree.UpdateTree();
 
                 Vector3 cubeBounds = cubeMetadata.SetSize;
@@ -486,14 +489,45 @@ namespace CubeServer.DataAccess
         {
             OcTree<CubeBounds> ocTree = new OcTree<CubeBounds>();
 
-            List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
+            List<LoaderSet> lods = new List<LoaderSet>();
+
             foreach (int detailLevel in Enumerable.Range(setMetadata.MinimumLod, setMetadata.MaximumLod - setMetadata.MinimumLod + 1))
             {
+                // Allow exceptions to propagate here for logging in ELMAH
                 string detailLevelName = "L" + detailLevel;
                 Uri lodMetadataUri = new Uri(baseUrl, detailLevelName + "/metadata.json");
                 CubeMetadataContract cubeMetadata = await this.Deserialize<CubeMetadataContract>(lodMetadataUri);
+            
+                lods.Add(new LoaderSet{CubeMetadataContract = cubeMetadata, Name = detailLevelName, DetailLevel = detailLevel, MetadataUrl = lodMetadataUri});
+            }
 
-                ocTree.Add(MetadataLoader.LoadCubeBounds(cubeMetadata, detailLevelName));
+            Vector3 maxSetSize = new Vector3(0,0,0);
+            foreach (var loaderSet in lods)
+            {
+                if (loaderSet.CubeMetadataContract.SetSize.X > maxSetSize.X)
+                {
+                    maxSetSize.X = loaderSet.CubeMetadataContract.SetSize.X;
+                }
+
+                if (loaderSet.CubeMetadataContract.SetSize.Y > maxSetSize.Y)
+                {
+                    maxSetSize.Y = loaderSet.CubeMetadataContract.SetSize.Y;
+                }
+
+                if (loaderSet.CubeMetadataContract.SetSize.Z > maxSetSize.Z)
+                {
+                    maxSetSize.Z = loaderSet.CubeMetadataContract.SetSize.Z;
+                }
+            }
+
+            List<SetVersionLevelOfDetail> detailLevels = new List<SetVersionLevelOfDetail>();
+            foreach (LoaderSet loaderSet in lods)
+            {
+                var cubeMetadata = loaderSet.CubeMetadataContract;
+
+                Vector3 cubeSize = maxSetSize / loaderSet.CubeMetadataContract.SetSize;
+
+                ocTree.Add(MetadataLoader.LoadCubeBounds(loaderSet.CubeMetadataContract, loaderSet.Name, cubeSize));
 
                 Vector3 cubeBounds = cubeMetadata.SetSize;
 
@@ -501,8 +535,8 @@ namespace CubeServer.DataAccess
                 ExtentsContract virtualWorldBounds = cubeMetadata.VirtualWorldBounds;
 
                 SetVersionLevelOfDetail currentSetLevelOfDetail = new SetVersionLevelOfDetail();
-                currentSetLevelOfDetail.Metadata = lodMetadataUri;
-                currentSetLevelOfDetail.Number = detailLevel;
+                currentSetLevelOfDetail.Metadata = loaderSet.MetadataUrl;
+                currentSetLevelOfDetail.Number = loaderSet.DetailLevel;
                 currentSetLevelOfDetail.Cubes = ocTree;
                 currentSetLevelOfDetail.ModelBounds = new BoundingBox(
                     new Vector3(worldBounds.XMin, worldBounds.YMin, worldBounds.ZMin),
@@ -523,11 +557,11 @@ namespace CubeServer.DataAccess
                 }
 
                 currentSetLevelOfDetail.SetSize = new Vector3(cubeBounds.X, cubeBounds.Y, cubeBounds.Z);
-                currentSetLevelOfDetail.Name = "L" + detailLevel.ToString(CultureInfo.InvariantCulture);
+                currentSetLevelOfDetail.Name = "L" + loaderSet.DetailLevel.ToString(CultureInfo.InvariantCulture);
                 currentSetLevelOfDetail.VertexCount = cubeMetadata.VertexCount;
 
-                currentSetLevelOfDetail.TextureTemplate = new Uri(lodMetadataUri, "texture/{x}_{y}.jpg");
-                currentSetLevelOfDetail.ModelTemplate = new Uri(lodMetadataUri, "{x}_{y}_{z}.{format}");
+                currentSetLevelOfDetail.TextureTemplate = new Uri(loaderSet.MetadataUrl, "texture/{x}_{y}.jpg");
+                currentSetLevelOfDetail.ModelTemplate = new Uri(loaderSet.MetadataUrl, "{x}_{y}_{z}.{format}");
 
                 currentSetLevelOfDetail.TextureSetSize = cubeMetadata.TextureSetSize;
 
@@ -667,6 +701,14 @@ namespace CubeServer.DataAccess
                     this.stateLock.ExitWriteLock();
                 }
             }
+        }
+
+        private struct LoaderSet
+        {
+            internal CubeMetadataContract CubeMetadataContract { get; set; }
+            internal string Name { get; set; }
+            internal int DetailLevel { get; set; }
+            internal Uri MetadataUrl { get; set; }
         }
     }
 }
