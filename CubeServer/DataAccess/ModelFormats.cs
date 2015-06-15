@@ -10,6 +10,7 @@ namespace CubeServer.DataAccess
     {
         Unknown = 0,
         Obj = 1,
-        Ebo = 2
+        Ebo = 2,
+        Ctm = 3
     }
 }
