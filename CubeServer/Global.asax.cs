@@ -48,8 +48,8 @@ namespace CubeServer
 
             // wait reasonable amount of time for first load
             this.storage.WaitLoadCompleted.WaitOne(30000);
-            
-            var cors = new EnableCorsAttribute("*", "*", "*");
+
+            var cors = new EnableCorsAttribute("*", "*", "*", "Content-Range, Content-Length");
             GlobalConfiguration.Configuration.EnableCors(cors);
 
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
