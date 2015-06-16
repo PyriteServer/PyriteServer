@@ -4,13 +4,13 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Model
+namespace PyriteServer.Model
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using CubeServer.Contracts;
     using Microsoft.Xna.Framework;
+    using PyriteServer.Contracts;
 
     public class SetVersion
     {

@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Model
+namespace PyriteServer.Model
 {
     using System;
 

@@ -4,15 +4,15 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace PyriteServer.DataAccess
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
-    using CubeServer.DataAccess.Json;
-    using CubeServer.Model;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
+    using PyriteServer.DataAccess.Json;
+    using PyriteServer.Model;
 
     public class MetadataLoader
     {

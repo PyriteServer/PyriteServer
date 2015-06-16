@@ -4,12 +4,12 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace PyriteServer.DataAccess
 {
     using System;
     using System.Diagnostics;
     using System.IO;
-    using CubeServer.Contracts;
+    using PyriteServer.Contracts;
 
     public class FileSecretsProvider : ISecretsProvider
     {

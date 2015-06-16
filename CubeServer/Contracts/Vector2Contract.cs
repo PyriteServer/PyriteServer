@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Contracts
+namespace PyriteServer.Contracts
 {
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;

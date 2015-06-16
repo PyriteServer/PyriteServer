@@ -4,10 +4,10 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Contracts
+namespace PyriteServer.Contracts
 {
-    using CubeServer.Model;
     using Microsoft.Xna.Framework;
+    using PyriteServer.Model;
 
     public interface IBounds<TObject>
     {

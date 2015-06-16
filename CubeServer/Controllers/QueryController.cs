@@ -4,13 +4,13 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Controllers
+namespace PyriteServer.Controllers
 {
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Web.Http;
-    using CubeServer.Contracts;
     using Microsoft.Xna.Framework;
+    using PyriteServer.Contracts;
 
     public class QueryController : ApiController
     {

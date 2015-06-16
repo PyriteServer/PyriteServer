@@ -4,12 +4,12 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Contracts
+namespace PyriteServer.Contracts
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
-    using CubeServer.DataAccess.Json;
     using Microsoft.Xna.Framework;
+    using PyriteServer.DataAccess.Json;
 
     public interface ICubeStorage
     {

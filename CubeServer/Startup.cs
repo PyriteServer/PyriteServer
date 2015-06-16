@@ -4,12 +4,12 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-using CubeServer;
+using PyriteServer;
 using Microsoft.Owin;
 
 [assembly: OwinStartup(typeof(Startup))]
 
-namespace CubeServer
+namespace PyriteServer
 {
     using Owin;
 

@@ -4,9 +4,9 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace PyriteServer
 {
-    using CubeServer.Contracts;
+    using PyriteServer.Contracts;
 
     public static class Dependency
     {

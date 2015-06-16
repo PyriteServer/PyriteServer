@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeServer", "CubeServer\CubeServer.csproj", "{F606A181-4B4F-4A07-BAE9-713892BF117F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PyriteServer", "CubeServer\PyriteServer.csproj", "{F606A181-4B4F-4A07-BAE9-713892BF117F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{EDFE2305-E605-4718-B7D9-9BAC0D98552F}"
 	ProjectSection(SolutionItems) = preProject
@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 		PublishScripts\Configurations\CubeServer-WAWS-dev.json = PublishScripts\Configurations\CubeServer-WAWS-dev.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CubeServerTest", "CubeServerTest\CubeServerTest.csproj", "{48A302BE-A34A-4990-825C-D2F90AC7527A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PyriteServerTest", "CubeServerTest\PyriteServerTest.csproj", "{48A302BE-A34A-4990-825C-D2F90AC7527A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{F5998EC7-0ECE-4CD2-8454-3B2EC6400CB8}"
 	ProjectSection(SolutionItems) = preProject

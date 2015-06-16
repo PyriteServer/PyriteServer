@@ -4,12 +4,12 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Controllers
+namespace PyriteServer.Controllers
 {
     using System.Threading.Tasks;
     using System.Web.Http;
-    using CubeServer.Contracts;
-    using CubeServer.Results;
+    using PyriteServer.Contracts;
+    using PyriteServer.Results;
 
     public class TextureController : ApiController
     {

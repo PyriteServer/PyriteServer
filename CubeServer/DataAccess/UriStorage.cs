@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace PyriteServer.DataAccess
 {
     using System;
     using System.Collections.Generic;
@@ -17,14 +17,14 @@ namespace CubeServer.DataAccess
     using System.Runtime.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using CubeServer.Contracts;
-    using CubeServer.DataAccess.Json;
-    using CubeServer.Model;
     using Microsoft.Data.OData.Query.SemanticAst;
     using Microsoft.Owin.Logging;
     using Microsoft.WindowsAzure.Storage.Blob.Protocol;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
+    using PyriteServer.Contracts;
+    using PyriteServer.DataAccess.Json;
+    using PyriteServer.Model;
 
     public class UriStorage : ICubeStorage, IDisposable
     {

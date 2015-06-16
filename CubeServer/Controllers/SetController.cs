@@ -4,13 +4,13 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Controllers
+namespace PyriteServer.Controllers
 {
     using System.Diagnostics;
     using System.Linq;
     using System.Web.Http;
-    using CubeServer.Contracts;
-    using CubeServer.DataAccess.Json;
+    using PyriteServer.Contracts;
+    using PyriteServer.DataAccess.Json;
 
     public class SetController : ApiController
     {

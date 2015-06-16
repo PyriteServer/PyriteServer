@@ -4,14 +4,14 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Results
+namespace PyriteServer.Results
 {
     using System.Net;
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Web.Http;
-    using CubeServer.Contracts;
+    using PyriteServer.Contracts;
 
     public class StreamResult : IHttpActionResult
     {

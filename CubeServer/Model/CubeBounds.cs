@@ -4,11 +4,11 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Model
+namespace PyriteServer.Model
 {
     using System;
-    using CubeServer.Contracts;
     using Microsoft.Xna.Framework;
+    using PyriteServer.Contracts;
 
     public class CubeBounds : IBounds<CubeBounds>
     {

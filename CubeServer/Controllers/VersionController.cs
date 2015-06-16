@@ -4,11 +4,11 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.Controllers
+namespace PyriteServer.Controllers
 {
     using System.Diagnostics;
     using System.Web.Http;
-    using CubeServer.Contracts;
+    using PyriteServer.Contracts;
 
     public class VersionController : ApiController
     {

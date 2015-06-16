@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer
+namespace PyriteServer
 {
     using System;
     using System.Configuration;
@@ -14,8 +14,8 @@ namespace CubeServer
     using System.Web;
     using System.Web.Http;
     using System.Web.Http.Cors;
-    using CubeServer.Contracts;
-    using CubeServer.DataAccess;
+    using PyriteServer.Contracts;
+    using PyriteServer.DataAccess;
 
     public class WebApiApplication : HttpApplication
     {

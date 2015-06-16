@@ -4,11 +4,11 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServerTest
+namespace PyriteServerTest
 {
     using System.IO;
-    using CubeServer.DataAccess;
-    using CubeServer.Model;
+    using PyriteServer.DataAccess;
+    using PyriteServer.Model;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Xna.Framework;
 

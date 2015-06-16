@@ -4,7 +4,7 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess.Json
+namespace PyriteServer.DataAccess.Json
 {
     using Newtonsoft.Json;
 

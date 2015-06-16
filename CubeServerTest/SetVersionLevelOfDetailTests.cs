@@ -4,9 +4,9 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServerTest
+namespace PyriteServerTest
 {
-    using CubeServer.Model;
+    using PyriteServer.Model;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Microsoft.Xna.Framework;
 

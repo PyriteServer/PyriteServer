@@ -1,4 +1,4 @@
-namespace CubeServer.DataAccess
+namespace PyriteServer.DataAccess
 {
     using System;
 

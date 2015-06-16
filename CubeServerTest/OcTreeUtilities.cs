@@ -1,10 +1,10 @@
-﻿namespace CubeServerTest
+﻿namespace PyriteServerTest
 {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using CubeServer;
-    using CubeServer.Model;
+    using PyriteServer;
+    using PyriteServer.Model;
 
     public class OcTreeUtilities
     {

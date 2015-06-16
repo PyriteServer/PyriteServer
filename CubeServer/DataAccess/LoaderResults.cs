@@ -4,10 +4,10 @@
 // // // </copyright>
 // // //-------------------------------------------------------------------------------------------------
 
-namespace CubeServer.DataAccess
+namespace PyriteServer.DataAccess
 {
     using System.Collections.Generic;
-    using CubeServer.Model;
+    using PyriteServer.Model;
 
     public class LoaderResults
     {
