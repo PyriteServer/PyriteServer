@@ -1,7 +1,7 @@
 {
     "environmentSettings": {
         "webSite": {
-            "name": "DxCubeServer",
+            "name": "DxPyriteServer",
             "location": "West US"
         },
         "databases": [

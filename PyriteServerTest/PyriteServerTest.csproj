@@ -60,7 +60,7 @@
     <Compile Include="UriStorageTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CubeServer\PyriteServer.csproj">
+    <ProjectReference Include="..\PyriteServer\PyriteServer.csproj">
       <Project>{f606a181-4b4f-4a07-bae9-713892bf117f}</Project>
       <Name>PyriteServer</Name>
     </ProjectReference>
