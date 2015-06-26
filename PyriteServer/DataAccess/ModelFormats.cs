@@ -11,6 +11,7 @@ namespace PyriteServer.DataAccess
         Unknown = 0,
         Obj = 1,
         Ebo = 2,
-        Ctm = 3
+        Ctm = 3,
+        Ebo2 = 4
     }
 }
