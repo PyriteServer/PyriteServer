@@ -13,7 +13,6 @@ namespace PyriteServer
     using System.Net.Http.Formatting;
     using System.Web;
     using System.Web.Http;
-    using System.Web.Http.Cors;
     using PyriteServer.Contracts;
     using PyriteServer.DataAccess;
 
@@ -48,9 +47,6 @@ namespace PyriteServer
 
             // wait reasonable amount of time for first load
             this.storage.WaitLoadCompleted.WaitOne(30000);
-
-            var cors = new EnableCorsAttribute("*", "*", "*", "Content-Range, Content-Length");
-            GlobalConfiguration.Configuration.EnableCors(cors);
 
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
             GlobalConfiguration.Configuration.Formatters.Clear();
