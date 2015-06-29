@@ -51,6 +51,7 @@ namespace PyriteServer
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
             GlobalConfiguration.Configuration.Formatters.Clear();
             GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
+            GlobalConfiguration.Configuration.Formatters.Add(new BsonMediaTypeFormatter());
             GlobalConfiguration.Configuration.EnsureInitialized();
         }
 
