@@ -33,8 +33,11 @@ namespace PyriteServer
             dataPath = Path.GetFullPath(dataPath);
             Trace.WriteLine(String.Format("Data path: {0}", dataPath));
 
-            string connSecretsPath = Path.Combine(dataPath, "accountkey.txt");
-            ISecretsProvider connProvider = new FileSecretsProvider(connSecretsPath);
+            //string connSecretsPath = Path.Combine(dataPath, "accountkey.txt");
+            //ISecretsProvider connProvider = new FileSecretsProvider(connSecretsPath);
+
+            // .NET AppSettings provider
+            ISecretsProvider connProvider = new AzureAppSettingsProvider();
 
             string setRootUrl = ConfigurationManager.AppSettings["SetRootUrl"];
             if (string.IsNullOrWhiteSpace(setRootUrl))
