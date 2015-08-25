@@ -14,7 +14,7 @@
         {
             get
             {
-                return ConfigurationManager.AppSettings["AccountKey"];
+                return ConfigurationManager.AppSettings["Storage"];
             }
         }
     }
