@@ -20,6 +20,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -139,6 +140,7 @@
     <Compile Include="Controllers\SetController.cs" />
     <Compile Include="Controllers\TextureController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
+    <Compile Include="DataAccess\AzureAppSettingsProvider.cs" />
     <Compile Include="DataAccess\AzureUriStorage.cs" />
     <Compile Include="DataAccess\FileSecretsProvider.cs" />
     <Compile Include="DataAccess\Json\ExtentsContract.cs" />
