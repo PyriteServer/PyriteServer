@@ -17,14 +17,12 @@ namespace PyriteServer.DataAccess
     using System.Runtime.Serialization;
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.Data.OData.Query.SemanticAst;
-    using Microsoft.Owin.Logging;
-    using Microsoft.WindowsAzure.Storage.Blob.Protocol;
     using Microsoft.Xna.Framework;
     using Newtonsoft.Json;
     using PyriteServer.Contracts;
     using PyriteServer.DataAccess.Json;
     using PyriteServer.Model;
+    using System.IO.Compression;
 
     public class UriStorage : ICubeStorage, IDisposable
     {
@@ -596,6 +594,14 @@ namespace PyriteServer.DataAccess
             TimeSpan reload = TimeSpan.FromMinutes(30);
             DateTime next = DateTime.MinValue;
 
+
+            LoaderResults lkg;
+            if (LKGSerializer.TryLoad(out lkg))
+            {
+                this.loadedSetData.Set(lkg);
+                this.onLoad.Set();
+            }
+
             while (!this.onExit.WaitOne(0))
             {
                 if (DateTime.Now > next)
@@ -603,6 +609,8 @@ namespace PyriteServer.DataAccess
                     LoaderResults results = this.LoadMetadata().Result;
                     if (results.Errors.Length == 0)
                     {
+                        // materialize data as last known good in temp directory
+                        LKGSerializer.TrySave(results);
                         this.loadedSetData.Set(results);
                         this.onLoad.Set();
                     }
@@ -618,6 +626,57 @@ namespace PyriteServer.DataAccess
                 {
                     Thread.Sleep(pollingPeriod);
                 }
+            }
+        }
+
+        private static class LKGSerializer
+        {
+            private static string filename;
+            private static JsonSerializer serializer;
+
+            static LKGSerializer()
+            {
+                LKGSerializer.filename = Path.Combine(Path.GetTempPath(), "pyriteserver_lkg.gzip");
+                LKGSerializer.serializer = JsonSerializer.Create();
+            }
+
+            public static bool TryLoad(out LoaderResults results)
+            {
+                results = null;
+
+                try
+                {
+                    if(!File.Exists(LKGSerializer.filename))
+                    {
+                        return false;
+                    }
+
+                    using (FileStream stream = new FileStream(LKGSerializer.filename, FileMode.Open, FileAccess.Read))
+                    using (GZipStream gzip = new GZipStream(stream, CompressionMode.Decompress))
+                    using (StreamReader streamReader = new StreamReader(gzip))
+                    using (JsonTextReader reader = new JsonTextReader(streamReader))
+                    {
+                        results = serializer.Deserialize<LoaderResults>(reader);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            public static bool TrySave(LoaderResults results)
+            {
+                using (FileStream stream = new FileStream(LKGSerializer.filename, FileMode.Create, FileAccess.ReadWrite))
+                using (GZipStream gzip = new GZipStream(stream, CompressionMode.Compress))
+                using (StreamWriter writer = new StreamWriter(gzip))
+                {
+                    serializer.Serialize(writer, results);
+                }
+
+                return true;
             }
         }
 
