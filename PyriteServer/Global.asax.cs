@@ -19,7 +19,7 @@ namespace PyriteServer
     public class WebApiApplication : HttpApplication
     {
         private bool disposed = false;
-        private AzureUriStorage storage = null;
+        private UriStorage storage = null;
 
         public override void Dispose()
         {
@@ -45,7 +45,15 @@ namespace PyriteServer
                 throw new ConfigurationErrorsException("SetRootUrl not specified");
             }
 
-            this.storage = new AzureUriStorage(connProvider.Value, setRootUrl);
+            if (connProvider.Exists)
+            {
+                this.storage = new AzureUriStorage(connProvider.Value, setRootUrl);
+            }
+            else
+            {
+                this.storage = new UriStorage(setRootUrl);
+            }
+
             Dependency.Storage = this.storage;
 
             // wait reasonable amount of time for first load

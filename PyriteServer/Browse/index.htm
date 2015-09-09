@@ -95,8 +95,8 @@
     <div style="text-align:center;">
         <div class="pure-g pure-u-4-5" style="text-align:left;">
             <div class="pure-u-1-1">
-                <h1>Discover Set Version</h1>
-                Enumerate all versions of a set in storage
+                <h1>Discover Sets</h1>
+                Enumerate all sets in storage
             </div>
 
             <h3>Parameters</h3>
@@ -104,11 +104,7 @@
                 <fieldset>
                     <div class="pure-control-group">
                         <label for="apiUrl">Base URL</label>
-                        <input type="text" id="apiUrl" class="pure-text pure-input-4-5" value="http://api.pyrite3d.org/sets/{set}" /><br />
-                    </div>
-                    <div class="pure-control-group">
-                        <label for="setName">Set Name</label>
-                        <input type="text" id="setName" class="pure-text pure-input-4-5" placeholder="{set}" /><br />
+                        <input type="text" id="apiUrl" class="pure-text pure-input-4-5" value="/sets" /><br />
                     </div>
                     <div class="pure-controls">
                         <button class="pure-button pure-button-primary pure-input-1-5" onclick="onSendRequest()" id="send">Send Request</button>
@@ -117,7 +113,7 @@
             </div>
 
             <h3>Console</h3>
-            <div id="output" class="code" style="height:6em;">
+            <div id="output" class="code" style="height:4em;">
             </div>
             
             <h3>Parsed Response</h3>
@@ -131,36 +127,21 @@
     var sendButton = document.getElementById("send");
 
     var apiUrl = document.getElementById("apiUrl");
-    var setName = document.getElementById("setName");
 
     var xhr;
-
-    var qs = parseQueryString();
-
-    var qsSet = qs["set"];
-
-    if (qsSet != undefined) {
-        setName.value = qsSet;
-        onSendRequest();
-    }
     
+
     function onSendRequest() {
-
-        var set = setName.value;
-        var url = apiUrl.value.replace("{set}", set);
-
-        xhr = createRequest('GET', url);
+        xhr = createRequest('GET', apiUrl.value);
 
         xhr.onload = function () {
             var text = xhr.responseText;
 
-            outputDiv.innerText += xhr.status + " " +
-                "" + xhr.statusText + "" +
-                "\r\n";
+            outputDiv.innerText += xhr.status + " " + xhr.statusText + "\r\n";
             outputDiv.innerText += text;
 
             var responseDiv = document.getElementById("response");
-            parseResponse(setName.value, text, responseDiv);
+            parseResponse(text, responseDiv);
         };
 
         xhr.onerror = function () {
@@ -173,7 +154,7 @@
             sendButton.isDisabled = true;
         }
 
-        outputDiv.innerText = "GET " + url + "\r\n\r\n";
+        outputDiv.innerText = "GET " + apiUrl.value + "\r\n\r\n";
         xhr.send();
     }
 
@@ -201,26 +182,22 @@
         return xhr;
     }
 
-    function parseResponse(set, responseText, div) {
+    function parseResponse(responseText, div) {
         var response = JSON.parse(responseText);
         if (response["status"] == "OK") {
-
-            while (div.hasChildNodes()) {
-                div.removeChild(div.firstChild);
-            }
 
             var successElement = document.createElement("div");
             successElement.text = "Success";
             div.appendChild(successElement);
 
-            var setVersions = response["result"];
+            var sets = response["result"];
 
-            for (index in setVersions) {
-                var version = setVersions[index];
+            for (index in sets) {
+                var set = sets[index];
                 var setElement = document.createElement("div");
                 var anchorElement = document.createElement("a");
-                anchorElement.href = "./demo3.html?set=" + set + "&version=" + version["name"];
-                anchorElement.innerText = set + ":" + version["name"];
+                anchorElement.href = "./versions.htm?set=" + set["name"];
+                anchorElement.innerText = set["name"];
                 setElement.appendChild(anchorElement);
                 div.appendChild(setElement);
             }
