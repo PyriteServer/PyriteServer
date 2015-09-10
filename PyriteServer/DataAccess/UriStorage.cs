@@ -661,6 +661,7 @@ namespace PyriteServer.DataAccess
                 }
                 catch (Exception ex)
                 {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
                     return false;
                 }
 
@@ -669,11 +670,19 @@ namespace PyriteServer.DataAccess
 
             public static bool TrySave(LoaderResults results)
             {
-                using (FileStream stream = new FileStream(LKGSerializer.filename, FileMode.Create, FileAccess.ReadWrite))
-                using (GZipStream gzip = new GZipStream(stream, CompressionMode.Compress))
-                using (StreamWriter writer = new StreamWriter(gzip))
+                try
                 {
-                    serializer.Serialize(writer, results);
+                    using (FileStream stream = new FileStream(LKGSerializer.filename, FileMode.Create, FileAccess.ReadWrite))
+                    using (GZipStream gzip = new GZipStream(stream, CompressionMode.Compress))
+                    using (StreamWriter writer = new StreamWriter(gzip))
+                    {
+                        serializer.Serialize(writer, results);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
+                    return false;
                 }
 
                 return true;
