@@ -37,5 +37,13 @@ namespace PyriteServer.DataAccess
         {
             get { return this.connectionSecret; }
         }
+
+        public bool Exists
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Value);
+            }
+        }
     }
 }

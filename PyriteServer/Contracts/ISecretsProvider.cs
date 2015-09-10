@@ -9,5 +9,6 @@ namespace PyriteServer.Contracts
     public interface ISecretsProvider
     {
         string Value { get; }
+        bool Exists { get; }
     }
 }

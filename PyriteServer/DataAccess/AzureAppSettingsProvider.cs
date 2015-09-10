@@ -17,5 +17,13 @@
                 return ConfigurationManager.AppSettings["Storage"];
             }
         }
+
+        public bool Exists
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(Value);
+            }
+        }
     }
 }
